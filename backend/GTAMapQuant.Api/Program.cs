@@ -1,8 +1,11 @@
 using GTAMapQuant.DAL.Data;
 using Microsoft.EntityFrameworkCore;
+using GTAMapQuant.BLL.DTO.MapMarkers;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddMediatR(config =>
+    config.RegisterServicesFromAssembly(typeof(MapMarkerDto).Assembly));
 builder.Services.AddDbContext<GtaMapDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
