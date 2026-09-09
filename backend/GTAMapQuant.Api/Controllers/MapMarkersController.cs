@@ -2,6 +2,9 @@ using GTAMapQuant.DAL.Data;
 using Microsoft.AspNetCore.Mvc;
 using GTAMapQuant.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
+using GTAMapQuant.BLL.DTO.MapMarkers;
+using GTAMapQuant.BLL.MediatR.MapMarkers.GetAllMapMarkers;
+using MediatR;
 
 namespace GTAMapQuant.Api.Controllers;
 
@@ -10,16 +13,19 @@ namespace GTAMapQuant.Api.Controllers;
 public class MapMarkersController : ControllerBase
 {
     private readonly GtaMapDbContext _context;
+    private readonly ISender _sender;
 
-    public MapMarkersController(GtaMapDbContext context)
+    public MapMarkersController(GtaMapDbContext context, ISender sender)
     {
         _context = context;
+        _sender = sender;
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<MapMarker>>> GetAll()
+    public async Task<ActionResult<IEnumerable<MapMarkerDto>>> GetAll(
+        CancellationToken cancellationToken)
     {
-        return await _context.MapMarkers.ToListAsync();
+        return Ok(await _sender.Send(new GetAllMapMarkersQuery(), cancellationToken));
     }
 
     [HttpGet("{id:guid}")]
