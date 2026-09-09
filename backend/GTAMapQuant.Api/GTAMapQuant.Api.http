@@ -1,0 +1,6 @@
+@GTAMapQuant.Api_HostAddress = http://localhost:5114
+
+GET {{GTAMapQuant.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

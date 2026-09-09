@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/backend/">
+    <Project Path="backend/GTAMapQuant.Api/GTAMapQuant.Api.csproj" />
+    <Project Path="backend/GTAMapQuant.BLL/GTAMapQuant.BLL.csproj" />
+    <Project Path="backend/GTAMapQuant.DAL/GTAMapQuant.DAL.csproj" />
+  </Folder>
+</Solution>
