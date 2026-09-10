@@ -1,91 +1,53 @@
-using GTAMapQuant.DAL.Data;
 using Microsoft.AspNetCore.Mvc;
-using GTAMapQuant.DAL.Entities;
 using GTAMapQuant.BLL.DTO.MapMarkers;
 using GTAMapQuant.BLL.MediatR.MapMarkers.GetAllMapMarkers;
-using MediatR;
+using GTAMapQuant.BLL.MediatR.MapMarkers.GetMapMarkerById;
+using GTAMapQuant.BLL.MediatR.MapMarkers.CreateMapMarker;
+using GTAMapQuant.BLL.MediatR.MapMarkers.DeleteMapMarker;
+using GTAMapQuant.BLL.MediatR.MapMarkers.UpdateMapMarker;
 
 namespace GTAMapQuant.Api.Controllers.MapMarkers;
 
 public class MapMarkersController : BaseApiController
 {
-    private readonly GtaMapDbContext _context;
-
-    public MapMarkersController(GtaMapDbContext context, ISender sender)
-    {
-        _context = context;
-    }
-
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<MapMarkerDto>>> GetAll(
+    public async Task<IActionResult> GetAll(
         CancellationToken cancellationToken)
     {
-        return Ok(await Sender.Send(new GetAllMapMarkersQuery(), cancellationToken));
+        return HandleResult(await Mediator.Send(new GetAllMapMarkersQuery(), cancellationToken));
     }
 
     [HttpGet("{id:guid}")]
-    public async Task<ActionResult<MapMarker>> GetById(Guid id)
+    public async Task<IActionResult> GetById(
+        Guid id,
+        CancellationToken cancellationToken)
     {
-        var marker = await _context.MapMarkers.FindAsync(id);
-
-        if (marker == null)
-        {
-            return NotFound();
-        }
-        return Ok(marker);
+        return HandleResult(await Mediator.Send(new GetMapMarkerByIdQuery(id), cancellationToken));
     }
 
     [HttpPost]
-    public async Task<ActionResult<MapMarker>> Create(MapMarker marker)
+    public async Task<IActionResult> Create(
+        CreateMapMarkerDto marker,
+        CancellationToken cancellationToken)
     {
-        var newMarker = new MapMarker
-        {
-            Id = Guid.NewGuid(),
-            Name = marker.Name,
-            Description = marker.Description,
-            Category = marker.Category,
-            X = marker.X,
-            Y = marker.Y
-        };
-
-        _context.MapMarkers.Add(newMarker);
-        await _context.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(GetById), new { id = newMarker.Id }, newMarker);
-    }
-
-    [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> Delete(Guid id)
-    {
-        var toDelete = await _context.MapMarkers.FindAsync(id);
-
-        if (toDelete == null)
-        {
-            return NotFound();
-        }
-
-        _context.MapMarkers.Remove(toDelete);
-        await _context.SaveChangesAsync();
-        return NoContent();
+        return HandleResult(await Mediator.Send(new CreateMapMarkerCommand(marker), cancellationToken));
     }
 
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Update(Guid id, MapMarker marker)
+    public async Task<IActionResult> Update(
+        Guid id,
+        UpdateMapMarkerDto marker,
+        CancellationToken cancellationToken)
     {
-        var toUpdate = await _context.MapMarkers.FindAsync(id);
+        return HandleResult(await Mediator.Send(new UpdateMapMarkerCommand(id, marker), cancellationToken));
+    }
 
-        if (toUpdate == null)
-        {
-            return NotFound();
-        }
-
-        toUpdate.Name = marker.Name;
-        toUpdate.Description = marker.Description;
-        toUpdate.Category = marker.Category;
-        toUpdate.X = marker.X;
-        toUpdate.Y = marker.Y;
-
-        await _context.SaveChangesAsync();
-        return NoContent();
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        return HandleResult(
+            await Mediator.Send(new DeleteMapMarkerCommand(id), cancellationToken));
     }
 }
