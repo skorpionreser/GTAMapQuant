@@ -1,0 +1,10 @@
+.gta-map {
+  width: 100%;
+  height: 100%;
+  background: #111827;
+}
+
+.gta-map .leaflet-container {
+  font: inherit;
+  background: #111827;
+}
