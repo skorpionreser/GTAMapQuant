@@ -11,4 +11,6 @@ public class GtaMapDbContext : DbContext
     }
 
     public DbSet<MapMarker> MapMarkers => Set<MapMarker>();
+    public DbSet<MapArea> MapAreas => Set<MapArea>();
+    public DbSet<MapAreaPoint> MapAreaPoints => Set<MapAreaPoint>();
 }
