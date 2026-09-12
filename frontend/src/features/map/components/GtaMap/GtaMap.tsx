@@ -3,19 +3,7 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import './GtaMap.css'
 import type { MarkersMap } from '../../types/MarkersMap'
-
-function getMarkerColor(category: number): string {
-  switch (category) {
-    case 1:
-      return '#2563eb'
-    case 2:
-      return '#f97316'
-    case 3:
-      return '#a855f7'
-    default:
-      return '#6b7280'
-  }
-}
+import { getMarkerCategoryColor } from '../../constants/markerCategoryOptions'
 
 export function GtaMap({ markers } : MarkersMap) {
   const mapElementRef = useRef<HTMLDivElement>(null)
@@ -33,17 +21,17 @@ export function GtaMap({ markers } : MarkersMap) {
       crs: L.CRS.Simple,
       attributionControl: false,
       minZoom: 0,
-      maxZoom: 6,
+      maxZoom: 8,
       zoomSnap: 0.25,
       zoomDelta: 0.5,
       maxBounds: bounds.pad(0.15),
       maxBoundsViscosity: 0.85,
     })
 
-    L.tileLayer('/gtamap/{z}/{x}/{y}.jpg', {
+    L.tileLayer('/gtamap/{z}/{x}/{y}.png', {
       minZoom: 0,
-      maxNativeZoom: 5,
-      maxZoom: 6,
+      maxNativeZoom: 7,
+      maxZoom: 8,
       tileSize: 256,
       noWrap: true,
       bounds,
@@ -75,7 +63,7 @@ export function GtaMap({ markers } : MarkersMap) {
         radius: 8,
         color: '#ffffff',
         weight: 2,
-        fillColor: getMarkerColor(marker.category),
+        fillColor: getMarkerCategoryColor(marker.category),
         fillOpacity: 1,
       })
 
