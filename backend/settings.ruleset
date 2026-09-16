@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="GTAMapQuant Style Rules" Description="Minimal StyleCop rules for new code." ToolsVersion="14.0">
+  <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
+    <IncludeAll Action="None" />
+    <Rule Id="SA1123" Action="Error" />
+    <Rule Id="SA1124" Action="Error" />
+    <Rule Id="SA1201" Action="Error" />
+    <Rule Id="SA1208" Action="Error" />
+    <Rule Id="SA1210" Action="Error" />
+    <Rule Id="SA1300" Action="Error" />
+    <Rule Id="SA1649" Action="Error" />
+    <Rule Id="SA1400" Action="Error" />
+    <Rule Id="SA1402" Action="Error" />
+    <Rule Id="SA1413" Action="Error" />
+    <Rule Id="SX1309" Action="Error" />
+    <Rule Id="SX1309S" Action="Error" />
+    <Rule Id="SA1303" Action="Error" />
+    <Rule Id="SA1312" Action="Error" />
+    <Rule Id="SA1500" Action="Error" />
+    <Rule Id="SA1503" Action="Error" />
+    <Rule Id="SA1507" Action="Error" />
+    <Rule Id="SA1517" Action="Error" />
+    <Rule Id="SA1518" Action="Error" />
+    <Rule Id="SA1520" Action="Error" />
+    <Rule Id="SA1302" Action="Error" />
+  </Rules>
+</RuleSet>

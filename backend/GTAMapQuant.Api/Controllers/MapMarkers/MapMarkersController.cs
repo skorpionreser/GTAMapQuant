@@ -1,10 +1,10 @@
-using Microsoft.AspNetCore.Mvc;
 using GTAMapQuant.BLL.DTO.MapMarkers;
-using GTAMapQuant.BLL.MediatR.MapMarkers.GetAllMapMarkers;
-using GTAMapQuant.BLL.MediatR.MapMarkers.GetMapMarkerById;
 using GTAMapQuant.BLL.MediatR.MapMarkers.CreateMapMarker;
 using GTAMapQuant.BLL.MediatR.MapMarkers.DeleteMapMarker;
+using GTAMapQuant.BLL.MediatR.MapMarkers.GetAllMapMarkers;
+using GTAMapQuant.BLL.MediatR.MapMarkers.GetMapMarkerById;
 using GTAMapQuant.BLL.MediatR.MapMarkers.UpdateMapMarker;
+using Microsoft.AspNetCore.Mvc;
 
 namespace GTAMapQuant.Api.Controllers.MapMarkers;
 

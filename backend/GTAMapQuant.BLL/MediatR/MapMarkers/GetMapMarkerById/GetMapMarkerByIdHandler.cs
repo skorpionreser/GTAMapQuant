@@ -1,8 +1,8 @@
+using FluentResults;
 using GTAMapQuant.BLL.DTO.MapMarkers;
 using GTAMapQuant.DAL.Data;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using FluentResults;
 
 namespace GTAMapQuant.BLL.MediatR.MapMarkers.GetMapMarkerById;
 
@@ -29,7 +29,7 @@ public class GetMapMarkerByIdHandler : IRequestHandler<GetMapMarkerByIdQuery, Re
                 Description = marker.Description,
                 Category = marker.Category,
                 X = marker.X,
-                Y = marker.Y
+                Y = marker.Y,
             })
             .FirstOrDefaultAsync(cancellationToken);
 

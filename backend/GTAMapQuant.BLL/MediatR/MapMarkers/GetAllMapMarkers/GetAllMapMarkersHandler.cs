@@ -29,7 +29,7 @@ public class GetAllMapMarkersHandler : IRequestHandler<GetAllMapMarkersQuery, Re
                 Description = marker.Description,
                 Category = marker.Category,
                 X = marker.X,
-                Y = marker.Y
+                Y = marker.Y,
             })
             .ToListAsync(cancellationToken);
 

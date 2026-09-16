@@ -4,56 +4,62 @@ using GTAMapQuant.BLL.MediatR.Behaviors;
 using GTAMapQuant.DAL.Data;
 using Microsoft.EntityFrameworkCore;
 
-var builder = WebApplication.CreateBuilder(args);
+namespace GTAMapQuant.Api;
 
-builder.Services.AddCors(options =>
+public class Program
 {
-    options.AddPolicy("Frontend", policy =>
+    protected Program()
     {
-        policy.WithOrigins("http://localhost:5173")
-            .AllowAnyHeader()
-            .AllowAnyMethod();
-    });
-});
+    }
 
-var currentAssemblies = AppDomain.CurrentDomain.GetAssemblies();
-var bllAssembly = typeof(ValidationBehavior<,>).Assembly;
+    public static async Task Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddValidatorsFromAssembly(bllAssembly);
-builder.Services.AddMediatR(config =>
-{
-    config.RegisterServicesFromAssemblies(currentAssemblies);
-    config.AddOpenBehavior(typeof(ValidationBehavior<,>));
-});
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("Frontend", policy =>
+            {
+                policy.WithOrigins("http://localhost:5173")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
+        });
 
-builder.Services.AddDbContext<GtaMapDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+        var currentAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+        var bllAssembly = typeof(ValidationBehavior<,>).Assembly;
 
-builder.Services.AddProblemDetails();
-builder.Services.AddExceptionHandler<ValidationExceptionHandler>();
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+        builder.Services.AddValidatorsFromAssembly(bllAssembly);
+        builder.Services.AddMediatR(config =>
+        {
+            config.RegisterServicesFromAssemblies(currentAssemblies);
+            config.AddOpenBehavior(typeof(ValidationBehavior<,>));
+        });
 
-var app = builder.Build();
+        builder.Services.AddDbContext<GtaMapDbContext>(options =>
+            options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-app.UseExceptionHandler();
+        builder.Services.AddProblemDetails();
+        builder.Services.AddExceptionHandler<ValidationExceptionHandler>();
+        builder.Services.AddControllers();
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen();
 
-app.UseCors("Frontend");
+        var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
+        app.UseExceptionHandler();
+        app.UseCors("Frontend");
+
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI();
+        }
+
+        app.UseHttpsRedirection();
+        app.UseAuthorization();
+        app.MapControllers();
+
+        await app.RunAsync();
+    }
 }
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
-
-public partial class Program;

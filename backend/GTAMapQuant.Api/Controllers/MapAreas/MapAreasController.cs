@@ -1,7 +1,7 @@
-using GTAMapQuant.BLL.MediatR.MapAreas.GetAllMapAreas;
-using Microsoft.AspNetCore.Mvc;
 using GTAMapQuant.BLL.DTO.MapAreas;
 using GTAMapQuant.BLL.MediatR.MapAreas.CreateMapArea;
+using GTAMapQuant.BLL.MediatR.MapAreas.GetAllMapAreas;
+using Microsoft.AspNetCore.Mvc;
 
 namespace GTAMapQuant.Api.Controllers.MapAreas;
 
