@@ -2,7 +2,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace GTAMapQuant.DAL.Entities;
 
-public class MapMarker{
+public class MapMarker
+{
     public Guid Id { get; set; }
 
     [Required]

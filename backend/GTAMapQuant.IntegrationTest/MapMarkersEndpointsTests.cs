@@ -79,4 +79,37 @@ public class MapMarkersEndpointsTests : IClassFixture<GtaMapWebApplicationFactor
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
+
+    [Fact]
+    public async Task GetAll_WhenMarkersExist_ShouldReturnAllMarkers()
+    {
+        await _factory.ResetDatabaseAsync();
+        var client = _factory.CreateClient();
+        var firstMarker = new CreateMapMarkerDto
+        {
+            Name = "Shop marker",
+            Category = MarkerCategory.Shop,
+            X = 10,
+            Y = 20,
+        };
+        var secondMarker = new CreateMapMarkerDto
+        {
+            Name = "Quest marker",
+            Category = MarkerCategory.Quest,
+            X = 30,
+            Y = 40,
+        };
+
+        await client.PostAsJsonAsync("/api/MapMarkers", firstMarker);
+        await client.PostAsJsonAsync("/api/MapMarkers", secondMarker);
+
+        var response = await client.GetAsync("/api/MapMarkers");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var markers = await response.Content.ReadFromJsonAsync<List<MapMarkerDto>>();
+        Assert.NotNull(markers);
+        Assert.Equal(2, markers.Count);
+        Assert.Contains(markers, marker => marker.Name == firstMarker.Name);
+        Assert.Contains(markers, marker => marker.Name == secondMarker.Name);
+    }
 }
