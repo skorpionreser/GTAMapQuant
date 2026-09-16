@@ -8,10 +8,6 @@ namespace GTAMapQuant.Api;
 
 public class Program
 {
-    protected Program()
-    {
-    }
-
     public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
