@@ -1,4 +1,5 @@
 import type { MarkerCategory } from "./MarkerCategory";
+
 export interface MapMarker{
     id: string,
     name: string;
