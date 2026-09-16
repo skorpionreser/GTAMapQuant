@@ -4,9 +4,11 @@ import { useMapMarkers } from './hooks/useMapMarkers'
 import './MapPage.css'
 import { MarkerCategory } from './types/MarkerCategory'
 import { categoryOptions } from './constants/markerCategoryOptions'
+import { useMapAreas } from './hooks/useMapAreas'
 
 export function MapPage() {
   const { markers, error, isLoading } = useMapMarkers()
+  const { areas, error: areasError, isLoading: areAreasLoading } = useMapAreas()
 
   const [selectedCategories, setSelectedCategories] = useState<MarkerCategory[]>([
     MarkerCategory.Other,
@@ -36,13 +38,20 @@ export function MapPage() {
       <header className="app__header">
         <h1>GTA V Map</h1>
         <p>Map markers: {markers.length}</p>
+        <p>Map areas: {areas.length}</p>
         <p>Visible markers: {filteredMarkers.length}</p>
 
         {isLoading && <p>Loading markers...</p>}
+        {areAreasLoading && <p>Loading map areas...</p>}
 
         {error && (
           <p className="app__error" role="alert">
             {error}
+          </p>
+        )}
+        {areasError && (
+          <p className="app__error" role="alert">
+            {areasError}
           </p>
         )}
         <div className="map-filters">
@@ -64,7 +73,7 @@ export function MapPage() {
       </header>
 
       <section className="app__map">
-        <GtaMap markers={filteredMarkers} />
+        <GtaMap markers={filteredMarkers} areas={areas} />
       </section>
     </main>
   )

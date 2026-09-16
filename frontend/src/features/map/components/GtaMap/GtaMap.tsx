@@ -2,13 +2,14 @@ import { useEffect, useRef } from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import './GtaMap.css'
-import type { MarkersMap } from '../../types/MarkersMap'
+import type { GtaMapProps } from '../../types/GtaMapProps'
 import { getMarkerCategoryColor } from '../../constants/markerCategoryOptions'
 
-export function GtaMap({ markers } : MarkersMap) {
+export function GtaMap({ markers, areas } : GtaMapProps) {
   const mapElementRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<L.Map | null>(null)
   const markersLayerRef = useRef<L.LayerGroup | null>(null)
+  const areasLayerRef = useRef<L.LayerGroup | null>(null)
 
   useEffect(() => {
     if (!mapElementRef.current || mapRef.current) {
@@ -38,6 +39,8 @@ export function GtaMap({ markers } : MarkersMap) {
       className: 'world-tiles',
     }).addTo(map)
 
+    areasLayerRef.current = L.layerGroup().addTo(map)
+
     markersLayerRef.current = L.layerGroup().addTo(map)
 
     map.fitBounds(bounds, { padding: [18, 18] })
@@ -47,6 +50,7 @@ export function GtaMap({ markers } : MarkersMap) {
       map.remove()
       mapRef.current = null
       markersLayerRef.current = null
+      areasLayerRef.current = null
     }
   }, [])
 
@@ -84,6 +88,44 @@ export function GtaMap({ markers } : MarkersMap) {
     }
 
   }, [markers])
+
+  useEffect(() => {
+    const areasLayer = areasLayerRef.current
+
+    if (!areasLayer) {
+      return
+    }
+
+    areasLayer.clearLayers()
+
+    for (const area of areas) {
+      const positions: L.LatLngExpression[] = area.points.map(
+        (point) => [-point.y, point.x],
+      )
+
+      const leafletArea = L.polygon(positions, {
+        color: area.color,
+        fillColor: area.color,
+        weight: 2,
+        fillOpacity: 0.25,
+      })
+
+      const popup = document.createElement('div')
+
+      const title = document.createElement('strong')
+      title.textContent = area.name
+      popup.append(title)
+
+      if (area.description !== null) {
+        const description = document.createElement('p')
+        description.textContent = area.description
+        popup.append(description)
+      }
+
+      leafletArea.bindPopup(popup)
+      leafletArea.addTo(areasLayer)
+    }
+  }, [areas])
 
   return <div ref={mapElementRef} className="gta-map" />
 }
