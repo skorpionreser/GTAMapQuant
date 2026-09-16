@@ -3,5 +3,7 @@
     <Project Path="backend/GTAMapQuant.Api/GTAMapQuant.Api.csproj" />
     <Project Path="backend/GTAMapQuant.BLL/GTAMapQuant.BLL.csproj" />
     <Project Path="backend/GTAMapQuant.DAL/GTAMapQuant.DAL.csproj" />
+    <Project Path="backend/GTAMapQuant.XUnitTest/GTAMapQuant.XUnitTest.csproj" />
+    <Project Path="backend/GTAMapQuant.IntegrationTest/GTAMapQuant.IntegrationTest.csproj" />
   </Folder>
 </Solution>
