@@ -67,13 +67,17 @@ jobs:
         working-directory: frontend
         run: npm run lint
 
+      - name: Run frontend tests with coverage
+        working-directory: frontend
+        run: npm run test:coverage
+
       - name: Build frontend
         working-directory: frontend
         run: npm run build
 
   sonarcloud:
     name: SonarCloud analysis
-    needs: backend
+    needs: [backend, frontend]
     runs-on: ubuntu-latest
     env:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -97,6 +101,20 @@ jobs:
         with:
           node-version: 24
 
+      - name: Install frontend dependencies
+        if: ${{ env.SONAR_TOKEN != '' && vars.SONAR_ORGANIZATION != '' && vars.SONAR_PROJECT_KEY != '' }}
+        working-directory: frontend
+        run: npm ci --ignore-scripts
+
+      - name: Run frontend tests with coverage
+        if: ${{ env.SONAR_TOKEN != '' && vars.SONAR_ORGANIZATION != '' && vars.SONAR_PROJECT_KEY != '' }}
+        working-directory: frontend
+        run: npm run test:coverage
+
+      - name: Prepare frontend coverage for SonarCloud
+        if: ${{ env.SONAR_TOKEN != '' && vars.SONAR_ORGANIZATION != '' && vars.SONAR_PROJECT_KEY != '' }}
+        run: sed -i 's|^SF:src/|SF:frontend/src/|' frontend/coverage/lcov.info
+
       - name: Install SonarScanner
         if: ${{ env.SONAR_TOKEN != '' && vars.SONAR_ORGANIZATION != '' && vars.SONAR_PROJECT_KEY != '' }}
         run: |
@@ -111,6 +129,7 @@ jobs:
           /o:"${{ vars.SONAR_ORGANIZATION }}"
           /d:sonar.token="$SONAR_TOKEN"
           /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
+          /d:sonar.javascript.lcov.reportPaths="frontend/coverage/lcov.info"
 
       - name: Restore dependencies
         if: ${{ env.SONAR_TOKEN != '' && vars.SONAR_ORGANIZATION != '' && vars.SONAR_PROJECT_KEY != '' }}

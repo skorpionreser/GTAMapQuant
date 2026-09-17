@@ -3,7 +3,7 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import './GtaMap.css'
 import type { GtaMapProps } from '../../types/GtaMapProps'
-import { getMarkerCategoryColor } from '../../constants/markerCategoryOptions'
+import { getMarkerCategoryColor, getMarkerCategoryIcon } from '../../constants/markerCategoryOptions'
 
 export function GtaMap({ markers, areas } : GtaMapProps) {
   const mapElementRef = useRef<HTMLDivElement>(null)
@@ -63,14 +63,26 @@ export function GtaMap({ markers, areas } : GtaMapProps) {
     
     markersLayer.clearLayers();
     for(const marker of markers){
-      const leafletMarker  = L.circleMarker([-marker.y, marker.x], {
-        radius: 8,
-        color: '#ffffff',
-        weight: 2,
-        fillColor: getMarkerCategoryColor(marker.category),
-        fillOpacity: 1,
-      })
-
+      const iconUrl = getMarkerCategoryIcon(marker.category);
+      let leafletMarker
+      if (iconUrl) {
+        leafletMarker = L.marker([-marker.y, marker.x], {
+            icon: L.icon({
+              iconUrl,
+              iconSize: [32, 32],
+              iconAnchor: [16, 30],
+              popupAnchor: [0, -30],
+            }),
+          })
+      } else {
+        leafletMarker = L.circleMarker([-marker.y, marker.x], {
+            radius: 8,
+            color: '#ffffff',
+            weight: 2,
+            fillColor: getMarkerCategoryColor(marker.category),
+            fillOpacity: 1,
+          })
+      }
       const popup = document.createElement('div')
 
       const title = document.createElement('strong')
