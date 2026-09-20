@@ -81,6 +81,28 @@ public class MapMarkersEndpointsTests : IClassFixture<GtaMapWebApplicationFactor
     }
 
     [Fact]
+    public async Task Create_WhenCategoryIsDefined_ShouldAcceptEveryMarkerCategory()
+    {
+        await _factory.ResetDatabaseAsync();
+        var client = _factory.CreateClient();
+
+        foreach (var category in Enum.GetValues<MarkerCategory>())
+        {
+            var request = new CreateMapMarkerDto
+            {
+                Name = $"Demo {category}",
+                Category = category,
+                X = (int)category,
+                Y = 128,
+            };
+
+            var response = await client.PostAsJsonAsync("/api/MapMarkers", request);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+    }
+
+    [Fact]
     public async Task GetAll_WhenMarkersExist_ShouldReturnAllMarkers()
     {
         await _factory.ResetDatabaseAsync();

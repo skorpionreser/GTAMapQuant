@@ -1,22 +1,32 @@
 import { describe, expect, it } from 'vitest'
 import {
+  categoryOptions,
   getMarkerCategoryColor,
   getMarkerCategoryIcon,
 } from './markerCategoryOptions'
 import { MarkerCategory } from '../types/MarkerCategory'
 
 describe('markerCategoryOptions', () => {
-  it('returns the matching icon for categories that have one', () => {
-    expect(getMarkerCategoryIcon(MarkerCategory.Shop)).toContain('market')
-    expect(getMarkerCategoryIcon(MarkerCategory.ServiceStation)).toContain(
-      'autoservice',
-    )
-    expect(getMarkerCategoryIcon(MarkerCategory.Quest)).toContain('quests')
+  it('has one option for every marker category', () => {
+    const categoryValues = Object.values(MarkerCategory)
+    const configuredValues = categoryOptions.map((option) => option.value)
+
+    expect(categoryOptions).toHaveLength(categoryValues.length)
+    expect(new Set(configuredValues).size).toBe(categoryValues.length)
   })
 
-  it('returns no icon and a fallback color for Other', () => {
-    expect(getMarkerCategoryIcon(MarkerCategory.Other)).toBeUndefined()
-    expect(getMarkerCategoryColor(MarkerCategory.Other)).toBe('#6b7280')
+  it('returns an existing icon for every category except Other', () => {
+    for (const option of categoryOptions) {
+      const iconUrl = getMarkerCategoryIcon(option.value)
+
+      if (option.value === MarkerCategory.Other) {
+        expect(iconUrl).toBeUndefined()
+        continue
+      }
+
+      expect(option.iconFile).toBeDefined()
+      expect(iconUrl).toContain(option.iconFile)
+    }
   })
 
   it('returns fallback values for an unknown category', () => {
