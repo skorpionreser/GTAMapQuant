@@ -10,12 +10,9 @@ export function MapPage() {
   const { markers, error, isLoading } = useMapMarkers()
   const { areas, error: areasError, isLoading: areAreasLoading } = useMapAreas()
 
-  const [selectedCategories, setSelectedCategories] = useState<MarkerCategory[]>([
-    MarkerCategory.Other,
-    MarkerCategory.Shop,
-    MarkerCategory.ServiceStation,
-    MarkerCategory.Quest,
-  ])
+  const [selectedCategories, setSelectedCategories] = useState<MarkerCategory[]>(
+    () => categoryOptions.map((option) => option.value),
+  )
 
   const filteredMarkers = markers.filter((marker) =>
     selectedCategories.includes(marker.category),
