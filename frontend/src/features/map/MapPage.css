@@ -1,49 +1,215 @@
-.app {
-  min-height: 100vh;
-  height: 100svh;
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
-  background: #111827;
-  color: #f9fafb;
+.page-eyebrow--accent {
+  color: var(--color-accent);
 }
 
-.app__header {
-  padding: 16px 24px;
-  background: #1f2937;
-  border-bottom: 1px solid #374151;
+.map-page {
+  position: relative;
+  height: calc(100vh - 85px);
+  min-height: 620px;
+  background: var(--color-bg);
 }
 
-.app__header h1 {
+.page-error {
+  position: absolute;
+  z-index: 10;
+  top: 18px;
+  right: 18px;
+  max-width: 360px;
   margin: 0;
-  font-size: 24px;
+  padding: 12px 15px;
+  border: 1px solid #713238;
+  border-radius: 10px;
+  background: #3a1e22;
+  color: #ffb4b8;
+  font-size: 13px;
 }
 
-.app__header p {
-  margin: 4px 0 0;
-  color: #9ca3af;
+.map-layout {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  grid-template-columns: 245px minmax(0, 1fr);
+  background: var(--color-panel);
 }
 
 .map-filters {
   display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 16px;
-}
-
-.map-filters__item {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-}
-
-.map-filters__color {
-  width: 10px;
-  height: 10px;
-  flex-shrink: 0;
-  border-radius: 50%;
-}
-
-.app__map {
   min-height: 0;
+  flex-direction: column;
+  padding: 24px 20px;
+  border-right: 1px solid var(--color-line);
+  background: #1b1b1b;
+  overflow-y: auto;
+}
+
+.map-filters h2 {
+  margin: 0 0 8px;
+  font-size: 19px;
+  letter-spacing: -0.5px;
+}
+
+.map-filters p {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.map-filters__label {
+  margin: 28px 0 12px;
+  color: var(--color-muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+.map-filters__label--first {
+  margin-top: 0;
+}
+
+.map-view-switch {
+  display: grid;
+  gap: 7px;
+  margin: 0 0 30px;
+}
+
+.map-view-switch button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  padding: 12px 11px;
+  background: transparent;
+  color: var(--color-muted);
+  text-align: left;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.map-view-switch button:hover {
+  background: #2b2b2b;
+  color: var(--color-text);
+}
+
+.map-view-switch button.is-active {
+  border-color: #6b5622;
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+}
+
+.map-view-switch button span {
+  min-width: 35px;
+  color: inherit;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.map-zones-note {
+  margin-top: 28px;
+}
+
+.map-zones-note .map-filters__label {
+  display: block;
+  margin: 0 0 10px;
+}
+
+.map-zones-note p {
+  padding: 13px;
+  border-left: 2px solid var(--color-accent);
+  border-radius: 0 8px 8px 0;
+  background: #2c2413;
+}
+
+.map-filters__status {
+  margin-top: auto;
+  padding-top: 18px;
+  border-top: 1px solid var(--color-line);
+  color: var(--color-muted);
+  font-size: 11px;
+}
+
+.map-page__surface {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--color-bg);
+}
+
+.map-page__caption {
+  position: absolute;
+  z-index: 5;
+  top: 22px;
+  left: 22px;
+  pointer-events: none;
+  text-shadow: 0 1px 6px #000;
+}
+
+.map-page__caption b,
+.map-page__caption span {
+  display: block;
+}
+
+.map-page__caption b {
+  font-size: 12px;
+  letter-spacing: 2px;
+}
+
+.map-page__caption span {
+  margin-top: 3px;
+  color: var(--color-muted);
+  font-size: 10px;
+  letter-spacing: 0.6px;
+}
+
+@media (max-width: 850px) {
+  .map-page {
+    height: auto;
+    min-height: 0;
+  }
+
+  .map-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .map-filters {
+    min-height: 190px;
+    padding: 18px;
+    border-right: 0;
+    border-bottom: 1px solid var(--color-line);
+  }
+
+  .map-view-switch {
+    display: flex;
+    margin-bottom: 20px;
+  }
+
+  .map-view-switch button {
+    width: auto;
+  }
+
+  .map-filters__status {
+    display: none;
+  }
+
+  .map-page__surface {
+    height: 720px;
+  }
+}
+
+@media (max-width: 560px) {
+  .map-page__surface {
+    height: 580px;
+  }
+
+  .page-error {
+    top: 10px;
+    right: 10px;
+    left: 10px;
+    max-width: none;
+  }
 }

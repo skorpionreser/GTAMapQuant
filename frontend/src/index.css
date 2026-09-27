@@ -1,7 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+
 :root {
-  font-family: Arial, sans-serif;
-  color: #f9fafb;
-  background: #111827;
+  --color-bg: #111111;
+  --color-panel: #202020;
+  --color-panel-raised: #242424;
+  --color-line: #393939;
+  --color-gray-600: #494949;
+  --color-gray-500: #727272;
+  --color-muted: #b8b8b8;
+  --color-text: #ffffff;
+  --color-accent: #fec93e;
+  --color-accent-ink: #3a2b0e;
+  --color-danger: #f07178;
+  font-family: Manrope, Arial, sans-serif;
+  color: var(--color-text);
+  background: var(--color-bg);
+  color-scheme: dark;
 }
 
 * {
@@ -18,4 +32,30 @@ body,
 
 body {
   min-height: 100vh;
+  background: var(--color-bg);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
 }
