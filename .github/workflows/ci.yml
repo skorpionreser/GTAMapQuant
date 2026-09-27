@@ -130,6 +130,7 @@ jobs:
           /d:sonar.token="$SONAR_TOKEN"
           /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
           /d:sonar.javascript.lcov.reportPaths="frontend/coverage/lcov.info"
+          /d:sonar.coverage.exclusions="**/Migrations/**,**/obj/**,**/*.Designer.cs"
 
       - name: Restore dependencies
         if: ${{ env.SONAR_TOKEN != '' && vars.SONAR_ORGANIZATION != '' && vars.SONAR_PROJECT_KEY != '' }}
