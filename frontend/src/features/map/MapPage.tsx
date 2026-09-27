@@ -1,76 +1,89 @@
 import { useState } from 'react'
 import { GtaMap } from './components/GtaMap/GtaMap'
 import { useMapMarkers } from './hooks/useMapMarkers'
-import './MapPage.css'
-import { MarkerCategory } from './types/MarkerCategory'
-import { categoryOptions } from './constants/markerCategoryOptions'
 import { useMapAreas } from './hooks/useMapAreas'
+import './MapPage.css'
+
+type MapView = 'world' | 'zones'
 
 export function MapPage() {
   const { markers, error, isLoading } = useMapMarkers()
   const { areas, error: areasError, isLoading: areAreasLoading } = useMapAreas()
+  const [mapView, setMapView] = useState<MapView>('world')
 
-  const [selectedCategories, setSelectedCategories] = useState<MarkerCategory[]>(
-    () => categoryOptions.map((option) => option.value),
-  )
-
-  const filteredMarkers = markers.filter((marker) =>
-    selectedCategories.includes(marker.category),
-  )
-
-  function toggleCategory(category: MarkerCategory) {
-    setSelectedCategories((currentCategories) => {
-      if (currentCategories.includes(category)) {
-        return currentCategories.filter(
-          (currentCategory) => currentCategory !== category,
-        )
-      }
-
-      return [...currentCategories, category]
-    })
-  }
+  const displayedMarkers = mapView === 'world' ? markers : []
+  const displayedAreas = mapView === 'zones' ? areas : []
 
   return (
-    <main className="app">
-      <header className="app__header">
-        <h1>GTA V Map</h1>
-        <p>Map markers: {markers.length}</p>
-        <p>Map areas: {areas.length}</p>
-        <p>Visible markers: {filteredMarkers.length}</p>
+    <main className="map-page">
+      {(error || areasError) && (
+        <p className="page-error" role="alert">
+          {error ?? areasError}
+        </p>
+      )}
 
-        {isLoading && <p>Loading markers...</p>}
-        {areAreasLoading && <p>Loading map areas...</p>}
+      <section className="map-layout">
+        <aside className="map-filters">
+          <span className="map-filters__label map-filters__label--first">MAP GROUPS</span>
+          <div className="map-view-switch" role="tablist" aria-label="Map groups">
+            <button
+              className={mapView === 'world' ? 'is-active' : undefined}
+              type="button"
+              role="tab"
+              aria-selected={mapView === 'world'}
+              onClick={() => setMapView('world')}
+            >
+              <span aria-hidden="true">Map</span>
+              World map
+            </button>
+            <button
+              className={mapView === 'zones' ? 'is-active' : undefined}
+              type="button"
+              role="tab"
+              aria-selected={mapView === 'zones'}
+              onClick={() => setMapView('zones')}
+            >
+              <span aria-hidden="true">Zone</span>
+              Game zones
+            </button>
+          </div>
 
-        {error && (
-          <p className="app__error" role="alert">
-            {error}
-          </p>
-        )}
-        {areasError && (
-          <p className="app__error" role="alert">
-            {areasError}
-          </p>
-        )}
-        <div className="map-filters">
-          {categoryOptions.map((option) => (
-            <label className="map-filters__item" key={option.value}>
-              <input
-                type="checkbox"
-                checked={selectedCategories.includes(option.value)}
-                onChange={() => toggleCategory(option.value)}
-              />
-              <span
-                className="map-filters__color"
-                style={{ backgroundColor: option.color }}
-              />
-              <span>{option.label}</span>
-            </label>
-          ))}
-        </div>
-      </header>
+          <div>
+            <h2>{mapView === 'world' ? 'World map' : 'Game zones'}</h2>
+            <p>
+              {mapView === 'world'
+                ? 'All available locations are visible as map icons.'
+                : 'Only zone boundaries are shown in this group.'}
+            </p>
+          </div>
 
-      <section className="app__map">
-        <GtaMap markers={filteredMarkers} areas={areas} />
+          {mapView === 'zones' && (
+            <div className="map-zones-note">
+              <span className="map-filters__label">DISPLAY</span>
+              <p>Icons are hidden in this mode so that zone borders remain readable.</p>
+            </div>
+          )}
+
+          <div className="map-filters__status">
+            {isLoading || areAreasLoading
+              ? 'Loading map data…'
+              : mapView === 'world'
+                ? `${markers.length} locations available`
+                : `${areas.length} zones available`}
+          </div>
+        </aside>
+
+        <section className="map-page__surface">
+          <div className="map-page__caption">
+            <b>{mapView === 'world' ? 'SAN ANDREAS' : 'GAME ZONES'}</b>
+            <span>
+              {mapView === 'world'
+                ? 'LOS SANTOS & BLAINE COUNTY'
+                : 'TERRITORIES AND ACTIVITIES'}
+            </span>
+          </div>
+          <GtaMap markers={displayedMarkers} areas={displayedAreas} />
+        </section>
       </section>
     </main>
   )
