@@ -1,13 +1,14 @@
 // @vitest-environment jsdom
 
-import { fireEvent, render, screen } from '@testing-library/react'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { MarkerCategory } from '../map/types/MarkerCategory'
 import { MapMarkerAdminPage } from './MapMarkerAdminPage'
 
 const apiMocks = vi.hoisted(() => ({
   createMapMarker: vi.fn(),
   deleteMapMarker: vi.fn(),
-  getMapMarkers: vi.fn().mockResolvedValue([]),
+  getMapMarkers: vi.fn(),
   updateMapMarker: vi.fn(),
 }))
 
@@ -27,9 +28,37 @@ vi.mock('./api/updateMapMarker', () => ({
   updateMapMarker: apiMocks.updateMapMarker,
 }))
 
-afterEach(() => {
-  vi.clearAllMocks()
+const existingMarker = {
+  category: MarkerCategory.Shop,
+  description: 'Open all day',
+  id: 'marker-id',
+  name: 'Shop',
+  x: 10,
+  y: 20,
+}
+
+beforeEach(() => {
+  apiMocks.getMapMarkers.mockResolvedValue([])
 })
+
+afterEach(() => {
+  cleanup()
+  vi.clearAllMocks()
+  vi.unstubAllGlobals()
+})
+
+function fillForm(name = 'New marker') {
+  fireEvent.change(screen.getByLabelText('Name'), { target: { value: name } })
+  fireEvent.change(screen.getByLabelText('Description'), {
+    target: { value: 'Description' },
+  })
+  fireEvent.change(screen.getByLabelText('X coordinate'), {
+    target: { value: '123' },
+  })
+  fireEvent.change(screen.getByLabelText('Y coordinate'), {
+    target: { value: '321' },
+  })
+}
 
 describe('MapMarkerAdminPage', () => {
   it('shows field errors and does not call the API when an empty form is submitted', () => {
@@ -41,5 +70,91 @@ describe('MapMarkerAdminPage', () => {
     expect(screen.getByText('X must be a finite number.')).toBeTruthy()
     expect(screen.getByText('Y must be a finite number.')).toBeTruthy()
     expect(apiMocks.createMapMarker).not.toHaveBeenCalled()
+  })
+
+  it('creates a marker and adds it to the table', async () => {
+    const savedMarker = {
+      ...existingMarker,
+      id: 'new-marker-id',
+      name: 'New marker',
+      x: 123,
+      y: 321,
+    }
+    apiMocks.createMapMarker.mockResolvedValue(savedMarker)
+    render(<MapMarkerAdminPage />)
+
+    fillForm()
+    fireEvent.click(screen.getByRole('button', { name: 'Create marker' }))
+
+    await waitFor(() =>
+      expect(apiMocks.createMapMarker).toHaveBeenCalledWith({
+        category: MarkerCategory.Other,
+        description: 'Description',
+        name: 'New marker',
+        x: 123,
+        y: 321,
+      }),
+    )
+    expect(screen.getByText('New marker')).toBeTruthy()
+    expect((screen.getByLabelText('Name') as HTMLInputElement).value).toBe('')
+  })
+
+  it('edits an existing marker and can cancel edit mode', async () => {
+    const updatedMarker = { ...existingMarker, name: 'Updated shop' }
+    apiMocks.getMapMarkers.mockResolvedValue([existingMarker])
+    apiMocks.updateMapMarker.mockResolvedValue(updatedMarker)
+    render(<MapMarkerAdminPage />)
+
+    await screen.findByText('Shop')
+    fireEvent.click(screen.getByRole('button', { name: 'Edit' }))
+
+    expect(screen.getByRole('button', { name: 'Save changes' })).toBeTruthy()
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel edit' }))
+    expect(screen.getByRole('button', { name: 'Create marker' })).toBeTruthy()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Edit' }))
+    fireEvent.change(screen.getByLabelText('Name'), {
+      target: { value: 'Updated shop' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Save changes' }))
+
+    await waitFor(() =>
+      expect(apiMocks.updateMapMarker).toHaveBeenCalledWith('marker-id', {
+        category: MarkerCategory.Shop,
+        description: 'Open all day',
+        name: 'Updated shop',
+        x: 10,
+        y: 20,
+      }),
+    )
+    expect(screen.getByText('Updated shop')).toBeTruthy()
+  })
+
+  it('deletes a confirmed marker from the table', async () => {
+    apiMocks.getMapMarkers.mockResolvedValue([existingMarker])
+    apiMocks.deleteMapMarker.mockResolvedValue(undefined)
+    vi.stubGlobal('confirm', vi.fn().mockReturnValue(true))
+    render(<MapMarkerAdminPage />)
+
+    await screen.findByText('Shop')
+    fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
+
+    await waitFor(() =>
+      expect(apiMocks.deleteMapMarker).toHaveBeenCalledWith('marker-id'),
+    )
+    expect(screen.queryByText('Shop')).toBeNull()
+  })
+
+  it('shows an API error after a failed create request', async () => {
+    apiMocks.createMapMarker.mockRejectedValue(new Error('Unable to save marker'))
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    render(<MapMarkerAdminPage />)
+
+    fillForm()
+    fireEvent.click(screen.getByRole('button', { name: 'Create marker' }))
+
+    expect(await screen.findByRole('alert').then((alert) => alert.textContent)).toBe(
+      'Unable to save marker',
+    )
   })
 })

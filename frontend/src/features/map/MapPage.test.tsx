@@ -3,14 +3,21 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import { MapPage } from './MapPage'
-import { categoryOptions } from './constants/markerCategoryOptions'
 import { useMapAreas } from './hooks/useMapAreas'
 import { useMapMarkers } from './hooks/useMapMarkers'
 import { MarkerCategory } from './types/MarkerCategory'
 
 vi.mock('./components/GtaMap/GtaMap', () => ({
-  GtaMap: ({ markers }: { markers: { id: string }[] }) => (
-    <div data-testid="map">Markers on map: {markers.length}</div>
+  GtaMap: ({
+    areas,
+    markers,
+  }: {
+    areas: { id: string }[]
+    markers: { id: string }[]
+  }) => (
+    <div data-testid="map">
+      Markers: {markers.length}; Areas: {areas.length}
+    </div>
   ),
 }))
 
@@ -26,7 +33,7 @@ const useMapMarkersMock = vi.mocked(useMapMarkers)
 const useMapAreasMock = vi.mocked(useMapAreas)
 
 describe('MapPage', () => {
-  it('shows all categories by default and filters markers when a category is unchecked', () => {
+  it('shows markers in the world view and areas in the zones view', () => {
     useMapMarkersMock.mockReturnValue({
       error: null,
       isLoading: false,
@@ -49,27 +56,30 @@ describe('MapPage', () => {
         },
       ],
     })
-    useMapAreasMock.mockReturnValue({ areas: [], error: null, isLoading: false })
+    useMapAreasMock.mockReturnValue({
+      areas: [
+        {
+          color: '#2563eb',
+          description: null,
+          id: 'area-id',
+          name: 'Test area',
+          points: [],
+        },
+      ],
+      error: null,
+      isLoading: false,
+    })
 
     render(<MapPage />)
 
-    expect(screen.getByText('Visible markers: 2')).not.toBeNull()
-    expect(screen.getByTestId('map').textContent).toBe('Markers on map: 2')
+    expect(screen.getByTestId('map').textContent).toBe('Markers: 2; Areas: 0')
 
-    const shopOption = categoryOptions.find(
-      (option) => option.value === MarkerCategory.Shop,
-    )
-    fireEvent.click(screen.getByRole('checkbox', { name: shopOption?.label }))
+    fireEvent.click(screen.getByRole('tab', { name: /game zones/i }))
 
-    expect(screen.getByText('Visible markers: 1')).not.toBeNull()
-    expect(screen.getByTestId('map').textContent).toBe('Markers on map: 1')
-
-    fireEvent.click(screen.getByRole('checkbox', { name: shopOption?.label }))
-
-    expect(screen.getByText('Visible markers: 2')).not.toBeNull()
+    expect(screen.getByTestId('map').textContent).toBe('Markers: 0; Areas: 1')
   })
 
-  it('shows loading states and errors from both data sources', () => {
+  it('shows a loading state and an error from map data requests', () => {
     useMapMarkersMock.mockReturnValue({
       error: 'Failed to load map markers.',
       isLoading: true,
@@ -83,8 +93,9 @@ describe('MapPage', () => {
 
     render(<MapPage />)
 
-    expect(screen.getByText('Loading markers...')).not.toBeNull()
-    expect(screen.getByText('Loading map areas...')).not.toBeNull()
-    expect(screen.getAllByRole('alert')).toHaveLength(2)
+    expect(screen.getByText('Loading map data…')).not.toBeNull()
+    expect(screen.getByRole('alert').textContent).toBe(
+      'Failed to load map markers.',
+    )
   })
 })
