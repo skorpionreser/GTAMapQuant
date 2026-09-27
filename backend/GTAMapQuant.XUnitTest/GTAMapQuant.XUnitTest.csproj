@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\\GTAMapQuant.Api\\GTAMapQuant.Api.csproj" />
     <ProjectReference Include="..\\GTAMapQuant.BLL\\GTAMapQuant.BLL.csproj" />
     <ProjectReference Include="..\\GTAMapQuant.DAL\\GTAMapQuant.DAL.csproj" />
   </ItemGroup>
