@@ -142,9 +142,9 @@
 
 .map-page__caption {
   position: absolute;
-  z-index: 5;
-  top: 22px;
-  left: 22px;
+  z-index: 1001;
+  top: 24px;
+  left: 82px;
   pointer-events: none;
   text-shadow: 0 1px 6px #000;
 }

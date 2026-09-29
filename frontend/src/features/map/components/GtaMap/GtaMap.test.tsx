@@ -25,6 +25,8 @@ const leafletMocks = vi.hoisted(() => {
     }),
     map: vi.fn(() => ({
       fitBounds: vi.fn(),
+      off: vi.fn(),
+      on: vi.fn(),
       remove: vi.fn(),
     })),
     marker: vi.fn(createMarker),
@@ -104,5 +106,20 @@ describe('GtaMap', () => {
       ],
       expect.objectContaining({ color: '#2563eb' }),
     )
+  })
+
+  it('converts a Leaflet click into game-map coordinates', () => {
+    const onMapClick = vi.fn()
+
+    render(<GtaMap markers={[]} areas={[]} onMapClick={onMapClick} />)
+
+    const map = leafletMocks.map.mock.results[0].value
+    const clickHandler = map.on.mock.calls.find(
+      ([eventName]: [string]) => eventName === 'click',
+    )?.[1]
+
+    clickHandler({ latlng: { lat: -45, lng: 120 } })
+
+    expect(onMapClick).toHaveBeenCalledWith({ x: 120, y: 45 })
   })
 })

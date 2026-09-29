@@ -3,10 +3,10 @@ using GTAMapQuant.BLL.DTO.MapAreas;
 
 namespace GTAMapQuant.BLL.MediatR.MapAreas.Validators;
 
-public sealed class CreateMapAreaDtoValidator
-    : AbstractValidator<CreateMapAreaDto>
+public sealed class UpdateMapAreaDtoValidator
+    : AbstractValidator<UpdateMapAreaDto>
 {
-    public CreateMapAreaDtoValidator(
+    public UpdateMapAreaDtoValidator(
         IValidator<CreateMapAreaPointDto> pointValidator)
     {
         RuleFor(area => area.Name)
