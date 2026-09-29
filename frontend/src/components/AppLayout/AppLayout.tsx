@@ -1,5 +1,6 @@
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import logo from '../../assets/Logo.svg'
+import { AccountMenu } from '../../features/auth/components/AccountMenu/AccountMenu'
 import './AppLayout.css'
 
 function getPageTitle(pathname: string): string {
@@ -37,10 +38,6 @@ export function AppLayout() {
             <span aria-hidden="true">⌖</span>
             World map
           </NavLink>
-          <NavLink to="/admin/map-markers">
-            <span aria-hidden="true">⚙</span>
-            Administration
-          </NavLink>
         </nav>
 
         <div className="app-sidebar__footer">
@@ -55,9 +52,12 @@ export function AppLayout() {
           <div className="app-breadcrumbs">
             QUANT <span>/</span> <b>{pageTitle}</b>
           </div>
-          <div className="app-topbar__identity">
-            <span>GTA V</span>
-            <img src={logo} alt="QUANT" />
+          <div className="app-topbar__actions">
+            <div className="app-topbar__identity">
+              <span>GTA V</span>
+              <img src={logo} alt="QUANT" />
+            </div>
+            <AccountMenu />
           </div>
         </header>
         <Outlet />

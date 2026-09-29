@@ -6,11 +6,13 @@ const mapMarkerUrl = 'http://localhost:5114/api/MapMarkers'
 export async function updateMapMarker(
   id: string,
   request: CreateMapMarkerRequest,
+  token: string,
 ): Promise<MapMarker> {
   const response = await fetch(`${mapMarkerUrl}/${id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(request),
   })

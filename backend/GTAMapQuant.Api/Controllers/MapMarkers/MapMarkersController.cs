@@ -4,6 +4,7 @@ using GTAMapQuant.BLL.MediatR.MapMarkers.DeleteMapMarker;
 using GTAMapQuant.BLL.MediatR.MapMarkers.GetAllMapMarkers;
 using GTAMapQuant.BLL.MediatR.MapMarkers.GetMapMarkerById;
 using GTAMapQuant.BLL.MediatR.MapMarkers.UpdateMapMarker;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GTAMapQuant.Api.Controllers.MapMarkers;
@@ -25,6 +26,7 @@ public class MapMarkersController : BaseApiController
         return HandleResult(await Mediator.Send(new GetMapMarkerByIdQuery(id), cancellationToken));
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> Create(
         CreateMapMarkerDto marker,
@@ -33,6 +35,7 @@ public class MapMarkersController : BaseApiController
         return HandleResult(await Mediator.Send(new CreateMapMarkerCommand(marker), cancellationToken));
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(
         Guid id,
@@ -42,6 +45,7 @@ public class MapMarkersController : BaseApiController
         return HandleResult(await Mediator.Send(new UpdateMapMarkerCommand(id, marker), cancellationToken));
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(
         Guid id,
