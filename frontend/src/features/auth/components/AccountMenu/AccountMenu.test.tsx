@@ -7,7 +7,7 @@ import { AccountMenu } from './AccountMenu'
 
 const authMocks = vi.hoisted(() => ({ useAuth: vi.fn() }))
 
-vi.mock('../../AuthContext', () => ({ useAuth: authMocks.useAuth }))
+vi.mock('../../useAuth', () => ({ useAuth: authMocks.useAuth }))
 
 function renderMenu() {
   render(<MemoryRouter><AccountMenu /></MemoryRouter>)

@@ -1,19 +1,11 @@
 import { login } from "./api/authApi";
-import { createContext, useContext, useState} from "react";
+import { useState} from "react";
 import type { ReactNode } from "react";
 import type { LoginRequest } from "./types/LoginRequest";
 import type { LoginResponse } from "./types/LoginResponse";
+import { AuthContext } from './auth-context'
 
 const authSessionStorageKey = 'gtamapquant-auth-session'
-
-interface AuthContextValue{
-    session: LoginResponse | null
-    isAdmin: boolean
-    signIn: (request: LoginRequest) => Promise<void>
-    signOut: () => void
-}
-
-const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 
 interface AuthProviderProps{
     children: ReactNode
@@ -58,14 +50,4 @@ export function AuthProvider({ children }: AuthProviderProps) {
             {children}
         </AuthContext.Provider>
     )
-}
-
-export function useAuth() {
-    const context = useContext(AuthContext)
-
-    if (context === undefined) {
-        throw new Error('useAuth must be used inside AuthProvider')
-    }
-
-    return context
 }

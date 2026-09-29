@@ -11,7 +11,7 @@ import type { MapMarker } from '../map/types/MapMarker'
 import './MapMarkerAdminPage.css'
 import { validateMarkerForm } from './utils/validateMarkerForm'
 import type { MarkerFormErrors } from './types/MarkerFormErrors'
-import { useAuth } from '../auth/AuthContext'
+import { useAuth } from '../auth/useAuth'
 
 type TextField = 'name' | 'description' | 'x' | 'y'
 
