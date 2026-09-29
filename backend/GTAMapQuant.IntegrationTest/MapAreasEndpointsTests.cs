@@ -199,4 +199,39 @@ public class MapAreasEndpointsTests
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
+
+    [Fact]
+    public async Task Update_WhenAreaContainsNullPoint_ShouldReturnBadRequest()
+    {
+        await _factory.ResetDatabaseAsync();
+        var client = await _factory.CreateAdminClientAsync();
+        var createResponse = await client.PostAsJsonAsync("/api/MapAreas", new CreateMapAreaDto
+        {
+            Name = "Area to validate",
+            Color = "#2563eb",
+            Points = new[]
+            {
+                new CreateMapAreaPointDto { X = 10, Y = 10, Order = 0 },
+                new CreateMapAreaPointDto { X = 20, Y = 10, Order = 1 },
+                new CreateMapAreaPointDto { X = 20, Y = 20, Order = 2 },
+            },
+        });
+        var createdArea = await createResponse.Content.ReadFromJsonAsync<MapAreaDto>();
+
+        Assert.NotNull(createdArea);
+
+        var response = await client.PutAsJsonAsync($"/api/MapAreas/{createdArea.Id}", new UpdateMapAreaDto
+        {
+            Name = "Invalid update",
+            Color = "#2563eb",
+            Points = new CreateMapAreaPointDto[]
+            {
+                null!,
+                null!,
+                null!,
+            },
+        });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
 }

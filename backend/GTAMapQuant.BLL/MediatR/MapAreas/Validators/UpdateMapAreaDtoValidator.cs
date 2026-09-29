@@ -24,10 +24,18 @@ public sealed class UpdateMapAreaDtoValidator
             .WithMessage("Points are required.")
             .Must(points => points.Count() >= 3)
             .WithMessage("Area must contain at least 3 points.")
-            .Must(points => points.Select(point => point.Order).Distinct().Count() == points.Count())
+            .Must(points => points.All(point => point is not null))
+            .WithMessage("Points cannot contain null values.")
+            .Must(points => points
+                .Where(point => point is not null)
+                .Select(point => point!.Order)
+                .Distinct()
+                .Count() == points.Count())
             .WithMessage("Point order values must be unique.");
 
         RuleForEach(area => area.Points)
+            .NotNull()
+            .WithMessage("Point is required.")
             .SetValidator(pointValidator);
     }
 }
