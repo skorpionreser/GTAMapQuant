@@ -13,6 +13,7 @@ const request = {
 }
 
 const marker = { ...request, id: 'marker-id' }
+const token = 'test-token'
 
 afterEach(() => {
   vi.unstubAllGlobals()
@@ -26,17 +27,23 @@ describe('map marker mutation API', () => {
     })
     vi.stubGlobal('fetch', fetchMock)
 
-    await expect(createMapMarker(request)).resolves.toEqual(marker)
+    await expect(createMapMarker(request, token)).resolves.toEqual(marker)
     expect(fetchMock).toHaveBeenCalledWith(
       'http://localhost:5114/api/MapMarkers',
-      expect.objectContaining({ method: 'POST' }),
+      expect.objectContaining({
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        method: 'POST',
+      }),
     )
   })
 
   it('throws when marker creation fails', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false }))
 
-    await expect(createMapMarker(request)).rejects.toThrow(
+    await expect(createMapMarker(request, token)).rejects.toThrow(
       'Failed to create a marker',
     )
   })
@@ -48,10 +55,16 @@ describe('map marker mutation API', () => {
     })
     vi.stubGlobal('fetch', fetchMock)
 
-    await expect(updateMapMarker('marker-id', request)).resolves.toEqual(marker)
+    await expect(updateMapMarker('marker-id', request, token)).resolves.toEqual(marker)
     expect(fetchMock).toHaveBeenCalledWith(
       'http://localhost:5114/api/MapMarkers/marker-id',
-      expect.objectContaining({ method: 'PUT' }),
+      expect.objectContaining({
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        method: 'PUT',
+      }),
     )
   })
 
@@ -61,7 +74,7 @@ describe('map marker mutation API', () => {
       vi.fn().mockResolvedValue({ json: vi.fn().mockResolvedValue(null), ok: true }),
     )
 
-    await expect(updateMapMarker('marker-id', request)).rejects.toThrow(
+    await expect(updateMapMarker('marker-id', request, token)).rejects.toThrow(
       'Marker was not found',
     )
   })
@@ -69,7 +82,7 @@ describe('map marker mutation API', () => {
   it('throws when marker update fails', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false }))
 
-    await expect(updateMapMarker('marker-id', request)).rejects.toThrow(
+    await expect(updateMapMarker('marker-id', request, token)).rejects.toThrow(
       'Failed to update a marker',
     )
   })
@@ -78,17 +91,22 @@ describe('map marker mutation API', () => {
     const fetchMock = vi.fn().mockResolvedValue({ ok: true })
     vi.stubGlobal('fetch', fetchMock)
 
-    await expect(deleteMapMarker('marker-id')).resolves.toBeUndefined()
+    await expect(deleteMapMarker('marker-id', token)).resolves.toBeUndefined()
     expect(fetchMock).toHaveBeenCalledWith(
       'http://localhost:5114/api/MapMarkers/marker-id',
-      { method: 'DELETE' },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        method: 'DELETE',
+      },
     )
   })
 
   it('throws when marker deletion fails', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false }))
 
-    await expect(deleteMapMarker('marker-id')).rejects.toThrow(
+    await expect(deleteMapMarker('marker-id', token)).rejects.toThrow(
       'Failed to delete a marker',
     )
   })

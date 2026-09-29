@@ -1,6 +1,7 @@
 using GTAMapQuant.BLL.DTO.MapAreas;
 using GTAMapQuant.BLL.MediatR.MapAreas.CreateMapArea;
 using GTAMapQuant.BLL.MediatR.MapAreas.GetAllMapAreas;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GTAMapQuant.Api.Controllers.MapAreas;
@@ -14,6 +15,7 @@ public class MapAreasController : BaseApiController
         return HandleResult(await Mediator.Send(new GetAllMapAreasQuery(), cancellationToken));
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> Create(
         CreateMapAreaDto area,

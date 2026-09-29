@@ -6,7 +6,8 @@ using Xunit;
 
 namespace GTAMapQuant.IntegrationTest;
 
-public class MapMarkersEndpointsTests : IClassFixture<GtaMapWebApplicationFactory>
+[Collection(ApiIntegrationTestCollection.Name)]
+public class MapMarkersEndpointsTests
 {
     private readonly GtaMapWebApplicationFactory _factory;
 
@@ -19,7 +20,7 @@ public class MapMarkersEndpointsTests : IClassFixture<GtaMapWebApplicationFactor
     public async Task CrudLifecycle_WhenMarkerIsValid_ShouldReturnExpectedResponses()
     {
         await _factory.ResetDatabaseAsync();
-        var client = _factory.CreateClient();
+        var client = await _factory.CreateAdminClientAsync();
         var createRequest = new CreateMapMarkerDto
         {
             Name = "Ammu-Nation",
@@ -66,7 +67,7 @@ public class MapMarkersEndpointsTests : IClassFixture<GtaMapWebApplicationFactor
     public async Task Create_WhenMarkerIsInvalid_ShouldReturnBadRequest()
     {
         await _factory.ResetDatabaseAsync();
-        var client = _factory.CreateClient();
+        var client = await _factory.CreateAdminClientAsync();
         var request = new CreateMapMarkerDto
         {
             Name = string.Empty,
@@ -84,7 +85,7 @@ public class MapMarkersEndpointsTests : IClassFixture<GtaMapWebApplicationFactor
     public async Task Create_WhenCategoryIsDefined_ShouldAcceptEveryMarkerCategory()
     {
         await _factory.ResetDatabaseAsync();
-        var client = _factory.CreateClient();
+        var client = await _factory.CreateAdminClientAsync();
 
         foreach (var category in Enum.GetValues<MarkerCategory>())
         {
@@ -106,7 +107,7 @@ public class MapMarkersEndpointsTests : IClassFixture<GtaMapWebApplicationFactor
     public async Task GetAll_WhenMarkersExist_ShouldReturnAllMarkers()
     {
         await _factory.ResetDatabaseAsync();
-        var client = _factory.CreateClient();
+        var client = await _factory.CreateAdminClientAsync();
         var firstMarker = new CreateMapMarkerDto
         {
             Name = "Shop marker",
@@ -133,5 +134,23 @@ public class MapMarkersEndpointsTests : IClassFixture<GtaMapWebApplicationFactor
         Assert.Equal(2, markers.Count);
         Assert.Contains(markers, marker => marker.Name == firstMarker.Name);
         Assert.Contains(markers, marker => marker.Name == secondMarker.Name);
+    }
+
+    [Fact]
+    public async Task Create_WhenUserIsAnonymous_ShouldReturnUnauthorized()
+    {
+        await _factory.ResetDatabaseAsync();
+        var client = _factory.CreateClient();
+        var request = new CreateMapMarkerDto
+        {
+            Name = "Protected marker",
+            Category = MarkerCategory.Shop,
+            X = 10,
+            Y = 20,
+        };
+
+        var response = await client.PostAsJsonAsync("/api/MapMarkers", request);
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 }

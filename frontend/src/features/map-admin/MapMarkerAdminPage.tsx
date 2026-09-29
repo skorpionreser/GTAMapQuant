@@ -1,4 +1,4 @@
-import { type SubmitEvent, useEffect, useState } from 'react'
+import { type SubmitEvent, useEffect, useRef, useState } from 'react'
 import { categoryOptions } from '../map/constants/markerCategoryOptions'
 import { MarkerCategory } from '../map/types/MarkerCategory'
 import type { MarkerFormValues } from './types/MarkerFormValues'
@@ -11,6 +11,7 @@ import type { MapMarker } from '../map/types/MapMarker'
 import './MapMarkerAdminPage.css'
 import { validateMarkerForm } from './utils/validateMarkerForm'
 import type { MarkerFormErrors } from './types/MarkerFormErrors'
+import { useAuth } from '../auth/useAuth'
 
 type TextField = 'name' | 'description' | 'x' | 'y'
 
@@ -23,6 +24,9 @@ const initialFormValues: MarkerFormValues = {
 }
 
 export function MapMarkerAdminPage() {
+  const { session } = useAuth()
+  const token = session?.token
+  const formSectionRef = useRef<HTMLElement>(null)
   const [formValues, setFormValues] = useState<MarkerFormValues>(initialFormValues)
   const [error, setError] = useState<string | null>(null)
   const [markers, setMarkers] = useState<MapMarker[]>([])
@@ -76,6 +80,7 @@ export function MapMarkerAdminPage() {
     setEditingMarkerId(marker.id)
     setError(null)
     setValidationErrors({})
+    formSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
   function handleCancelEdit() {
@@ -96,8 +101,13 @@ export function MapMarkerAdminPage() {
 
     setError(null)
 
+    if (!token) {
+      setError('Your session has expired. Sign in again.')
+      return
+    }
+
     try {
-      await deleteMapMarker(marker.id)
+      await deleteMapMarker(marker.id, token)
       setMarkers((currentMarkers) =>
         currentMarkers.filter((currentMarker) => currentMarker.id !== marker.id),
       )
@@ -120,6 +130,11 @@ export function MapMarkerAdminPage() {
     event.preventDefault()
     setError(null)
 
+    if (!token) {
+      setError('Your session has expired. Sign in again.')
+      return
+    }
+
     const errors = validateMarkerForm(formValues)
     setValidationErrors(errors)
     
@@ -137,8 +152,8 @@ export function MapMarkerAdminPage() {
     try {
       const savedMarker =
         editingMarkerId === null
-          ? await createMapMarker(request)
-          : await updateMapMarker(editingMarkerId, request)
+          ? await createMapMarker(request, token)
+          : await updateMapMarker(editingMarkerId, request, token)
 
       setMarkers((currentMarkers) =>
         editingMarkerId === null
@@ -173,7 +188,7 @@ export function MapMarkerAdminPage() {
 
       {error && <p role="alert">{error}</p>}
 
-      <section className="admin-card admin-form-card">
+      <section ref={formSectionRef} className="admin-card admin-form-card">
         <div className="admin-card__heading">
           <div>
             <span className="page-eyebrow">{editingMarkerId === null ? 'NEW MARKER' : 'EDIT MODE'}</span>

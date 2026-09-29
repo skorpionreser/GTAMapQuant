@@ -5,7 +5,8 @@ using Xunit;
 
 namespace GTAMapQuant.IntegrationTest;
 
-public class MapAreasEndpointsTests : IClassFixture<GtaMapWebApplicationFactory>
+[Collection(ApiIntegrationTestCollection.Name)]
+public class MapAreasEndpointsTests
 {
     private readonly GtaMapWebApplicationFactory _factory;
 
@@ -18,7 +19,7 @@ public class MapAreasEndpointsTests : IClassFixture<GtaMapWebApplicationFactory>
     public async Task CreateThenGetAll_WhenAreaIsValid_ShouldReturnCreatedArea()
     {
         await _factory.ResetDatabaseAsync();
-        var client = _factory.CreateClient();
+        var client = await _factory.CreateAdminClientAsync();
         var request = new CreateMapAreaDto
         {
             Name = "Vinewood",
@@ -52,7 +53,7 @@ public class MapAreasEndpointsTests : IClassFixture<GtaMapWebApplicationFactory>
     public async Task Create_WhenAreaHasInvalidColor_ShouldReturnBadRequest()
     {
         await _factory.ResetDatabaseAsync();
-        var client = _factory.CreateClient();
+        var client = await _factory.CreateAdminClientAsync();
         var request = new CreateMapAreaDto
         {
             Name = "Invalid area",

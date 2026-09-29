@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom'
 import { MapMarkerAdminPage } from './features/map-admin/MapMarkerAdminPage'
 import { AppLayout } from './components/AppLayout/AppLayout'
 import { HomePage } from './features/home/HomePage'
+import { RequireAdmin } from './features/auth/RequireAdmin'
 
 function App() {
   return (
@@ -10,7 +11,7 @@ function App() {
       <Route element={<AppLayout />}>
         <Route path="/" element={<HomePage />} />
         <Route path="/map" element={<MapPage />} />
-        <Route path="/admin/map-markers" element={<MapMarkerAdminPage />} />
+        <Route path="/admin/map-markers" element={<RequireAdmin><MapMarkerAdminPage /></RequireAdmin>} />
       </Route>
     </Routes>
   )
