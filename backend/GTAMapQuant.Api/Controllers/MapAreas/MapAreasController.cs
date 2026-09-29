@@ -1,6 +1,8 @@
 using GTAMapQuant.BLL.DTO.MapAreas;
 using GTAMapQuant.BLL.MediatR.MapAreas.CreateMapArea;
+using GTAMapQuant.BLL.MediatR.MapAreas.DeleteMapArea;
 using GTAMapQuant.BLL.MediatR.MapAreas.GetAllMapAreas;
+using GTAMapQuant.BLL.MediatR.MapAreas.UpdateMapArea;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,5 +24,24 @@ public class MapAreasController : BaseApiController
         CancellationToken cancellationToken)
     {
         return HandleResult(await Mediator.Send(new CreateMapAreaCommand(area), cancellationToken));
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> Update(
+        Guid id,
+        UpdateMapAreaDto area,
+        CancellationToken cancellationToken)
+    {
+        return HandleResult(await Mediator.Send(new UpdateMapAreaCommand(id, area), cancellationToken));
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        return HandleResult(await Mediator.Send(new DeleteMapAreaCommand(id), cancellationToken));
     }
 }

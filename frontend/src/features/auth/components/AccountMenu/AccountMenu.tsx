@@ -105,6 +105,7 @@ export function AccountMenu() {
           </div>
 
           {isAdmin && (
+            <>
             <Link
               className="account-menu__link"
               to="/admin/map-markers"
@@ -113,6 +114,14 @@ export function AccountMenu() {
               <span aria-hidden="true">⚙</span>
               Administration
             </Link>
+            <Link
+              className="account-menu__link"
+              to="/admin/map-areas"
+              onClick={() => setIsOpen(false)}
+            >
+              Area administration
+            </Link>
+            </>
           )}
 
           <button className="account-menu__sign-out" type="button" onClick={handleSignOut}>

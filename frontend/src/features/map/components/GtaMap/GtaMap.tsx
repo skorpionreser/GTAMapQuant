@@ -5,7 +5,7 @@ import './GtaMap.css'
 import type { GtaMapProps } from '../../types/GtaMapProps'
 import { getMarkerCategoryColor, getMarkerCategoryIcon } from '../../constants/markerCategoryOptions'
 
-export function GtaMap({ markers, areas } : GtaMapProps) {
+export function GtaMap({ markers, areas, onMapClick } : GtaMapProps) {
   const mapElementRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<L.Map | null>(null)
   const markersLayerRef = useRef<L.LayerGroup | null>(null)
@@ -53,6 +53,28 @@ export function GtaMap({ markers, areas } : GtaMapProps) {
       areasLayerRef.current = null
     }
   }, [])
+
+  useEffect(() => {
+    const map = mapRef.current
+    const handleClick = onMapClick
+
+    if (!map || !handleClick) {
+      return
+    }
+
+    function handleMapClick(event: L.LeafletMouseEvent) {
+      handleClick?.({
+        x: event.latlng.lng,
+        y: -event.latlng.lat,
+      })
+    }
+
+    map.on('click', handleMapClick)
+
+    return () => {
+      map.off('click', handleMapClick)
+    }
+  }, [onMapClick])
 
   useEffect(() => {
     const markersLayer = markersLayerRef.current
