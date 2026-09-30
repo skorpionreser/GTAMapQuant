@@ -29,6 +29,33 @@ vi.mock('./api/updateMapMarker', () => ({
   updateMapMarker: apiMocks.updateMapMarker,
 }))
 
+vi.mock('../map/components/GtaMap/GtaMap', () => ({
+  GtaMap: ({
+    onMapClick,
+    onMarkerMove,
+  }: {
+    onMapClick?: (coordinates: { x: number; y: number }) => void
+    onMarkerMove?: (coordinates: { x: number; y: number }) => void
+  }) => (
+    <>
+      <button
+        type="button"
+        aria-label="Choose marker position"
+        onClick={() => onMapClick?.({ x: 123.456, y: 234.567 })}
+      >
+        Map preview
+      </button>
+      <button
+        type="button"
+        aria-label="Drag marker"
+        onClick={() => onMarkerMove?.({ x: 42.424, y: 24.242 })}
+      >
+        Drag marker
+      </button>
+    </>
+  ),
+}))
+
 const existingMarker = {
   category: MarkerCategory.Shop,
   description: 'Open all day',
@@ -92,6 +119,18 @@ describe('MapMarkerAdminPage', () => {
     expect(screen.getByText('X must be a finite number.')).toBeTruthy()
     expect(screen.getByText('Y must be a finite number.')).toBeTruthy()
     expect(apiMocks.createMapMarker).not.toHaveBeenCalled()
+  })
+
+  it('writes selected and dragged map coordinates into the form', () => {
+    renderAdminPage()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Choose marker position' }))
+    expect((screen.getByLabelText('X coordinate') as HTMLInputElement).value).toBe('123.46')
+    expect((screen.getByLabelText('Y coordinate') as HTMLInputElement).value).toBe('234.57')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Drag marker' }))
+    expect((screen.getByLabelText('X coordinate') as HTMLInputElement).value).toBe('42.42')
+    expect((screen.getByLabelText('Y coordinate') as HTMLInputElement).value).toBe('24.24')
   })
 
   it('creates a marker and adds it to the table', async () => {

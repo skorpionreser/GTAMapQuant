@@ -1,4 +1,5 @@
-import { type SubmitEvent, useEffect, useRef, useState } from 'react'
+import { type SubmitEvent, useEffect, useMemo, useRef, useState } from 'react'
+import { GtaMap } from '../map/components/GtaMap/GtaMap'
 import { categoryOptions } from '../map/constants/markerCategoryOptions'
 import { MarkerCategory } from '../map/types/MarkerCategory'
 import type { MarkerFormValues } from './types/MarkerFormValues'
@@ -12,6 +13,7 @@ import '../admin/styles/AdminPage.css'
 import { validateMarkerForm } from './utils/validateMarkerForm'
 import type { MarkerFormErrors } from './types/MarkerFormErrors'
 import { useAuth } from '../auth/useAuth'
+import './MapMarkerAdminPage.css'
 
 type TextField = 'name' | 'description' | 'x' | 'y'
 
@@ -32,6 +34,25 @@ export function MapMarkerAdminPage() {
   const [markers, setMarkers] = useState<MapMarker[]>([])
   const [editingMarkerId, setEditingMarkerId] = useState<string | null>(null)
   const [validationErrors, setValidationErrors] = useState<MarkerFormErrors>({})
+
+  const editableMarker = useMemo(() => {
+    if (formValues.x.trim() === '' || formValues.y.trim() === '') {
+      return undefined
+    }
+
+    const x = Number(formValues.x)
+    const y = Number(formValues.y)
+
+    if (!Number.isFinite(x) || !Number.isFinite(y)) {
+      return undefined
+    }
+
+    return {
+      x,
+      y,
+      label: formValues.name.trim() || 'Marker preview',
+    }
+  }, [formValues.name, formValues.x, formValues.y])
 
   useEffect(() => {
     async function loadMarkers() {
@@ -66,6 +87,16 @@ export function MapMarkerAdminPage() {
     setFormValues((currentValues) => ({
       ...currentValues,
       category,
+    }))
+  }
+
+  function updateCoordinates(coordinates: { x: number; y: number }) {
+    clearValidationError('x')
+    clearValidationError('y')
+    setFormValues((currentValues) => ({
+      ...currentValues,
+      x: (Math.round(coordinates.x * 100) / 100).toString(),
+      y: (Math.round(coordinates.y * 100) / 100).toString(),
     }))
   }
 
@@ -267,6 +298,29 @@ export function MapMarkerAdminPage() {
             />
             {validationErrors.y && (<span className='admin-form__error'>{validationErrors.y}</span>)}
           </label>
+
+          <div className="marker-editor">
+            <div className="marker-editor__heading">
+              <div>
+                <span className="page-eyebrow">MARKER POSITION</span>
+                <h3>Click the map or drag the marker</h3>
+              </div>
+              <span>
+                {editableMarker
+                  ? `${editableMarker.x}, ${editableMarker.y}`
+                  : 'Choose a position on the map'}
+              </span>
+            </div>
+            <div className="marker-editor__map">
+              <GtaMap
+                markers={[]}
+                areas={[]}
+                editableMarker={editableMarker}
+                onMapClick={updateCoordinates}
+                onMarkerMove={updateCoordinates}
+              />
+            </div>
+          </div>
 
           <div className="admin-form__actions">
             <button className="button button--primary" type="submit">

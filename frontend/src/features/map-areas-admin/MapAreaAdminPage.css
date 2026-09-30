@@ -86,6 +86,20 @@
   color: var(--color-danger);
 }
 
+.area-editor__point-actions {
+  display: flex;
+  gap: 7px;
+}
+
+.area-editor__points button:disabled {
+  cursor: default;
+  opacity: 0.35;
+}
+
+.area-editor__points button:disabled:hover {
+  color: var(--color-muted);
+}
+
 .area-color-swatch {
   display: inline-flex;
   width: 12px;
