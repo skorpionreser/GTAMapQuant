@@ -61,3 +61,30 @@
 .gta-map .leaflet-popup-close-button {
   color: var(--color-muted) !important;
 }
+
+.gta-map__vertex-icon,
+.gta-map__editor-marker-icon {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border: 2px solid var(--color-text);
+  border-radius: 50%;
+  box-shadow: 0 3px 10px #0009;
+  color: var(--color-accent-ink);
+  background: var(--color-accent);
+  font: 800 12px/1 Manrope, sans-serif;
+  cursor: grab;
+}
+
+.gta-map__editor-marker-icon {
+  border-radius: 8px;
+  color: var(--color-text);
+  background: #2563eb;
+  font-size: 18px;
+}
+
+.gta-map__vertex-icon:active,
+.gta-map__editor-marker-icon:active {
+  cursor: grabbing;
+}

@@ -20,6 +20,10 @@ const initialFormValues: MapAreaFormValues = {
   points: [],
 }
 
+function roundCoordinate(value: number) {
+  return Math.round(value * 100) / 100
+}
+
 export function MapAreaAdminPage() {
   const { session } = useAuth()
   const token = session?.token
@@ -92,12 +96,54 @@ export function MapAreaAdminPage() {
       points: [
         ...currentValues.points,
         {
-          x: Math.round(coordinates.x * 100) / 100,
-          y: Math.round(coordinates.y * 100) / 100,
+          x: roundCoordinate(coordinates.x),
+          y: roundCoordinate(coordinates.y),
           order: currentValues.points.length,
         },
       ],
     }))
+  }
+
+  function handlePointMove(order: number, coordinates: { x: number; y: number }) {
+    setFormValues((currentValues) => ({
+      ...currentValues,
+      points: currentValues.points.map((point) =>
+        point.order === order
+          ? {
+              ...point,
+              x: roundCoordinate(coordinates.x),
+              y: roundCoordinate(coordinates.y),
+            }
+          : point,
+      ),
+    }))
+  }
+
+  function movePoint(order: number, direction: -1 | 1) {
+    setFormValues((currentValues) => {
+      const currentIndex = currentValues.points.findIndex(
+        (point) => point.order === order,
+      )
+      const destinationIndex = currentIndex + direction
+
+      if (
+        currentIndex === -1 ||
+        destinationIndex < 0 ||
+        destinationIndex >= currentValues.points.length
+      ) {
+        return currentValues
+      }
+
+      const reorderedPoints = [...currentValues.points]
+      const currentPoint = reorderedPoints[currentIndex]
+      reorderedPoints[currentIndex] = reorderedPoints[destinationIndex]
+      reorderedPoints[destinationIndex] = currentPoint
+
+      return {
+        ...currentValues,
+        points: reorderedPoints.map((point, index) => ({ ...point, order: index })),
+      }
+    })
   }
 
   function removePoint(order: number) {
@@ -285,7 +331,13 @@ export function MapAreaAdminPage() {
             </div>
 
             <div className="area-editor__map">
-              <GtaMap markers={[]} areas={previewAreas} onMapClick={handleMapClick} />
+              <GtaMap
+                markers={[]}
+                areas={previewAreas}
+                editablePoints={formValues.points}
+                onMapClick={handleMapClick}
+                onPointMove={handlePointMove}
+              />
             </div>
 
             <div className="area-editor__points">
@@ -298,13 +350,31 @@ export function MapAreaAdminPage() {
                 {formValues.points.map((point) => (
                   <li key={point.order}>
                     <span>#{point.order + 1}: {point.x}, {point.y}</span>
-                    <button
-                      type="button"
-                      aria-label={`Remove point ${point.order + 1}`}
-                      onClick={() => removePoint(point.order)}
-                    >
-                      Remove
-                    </button>
+                    <div className="area-editor__point-actions">
+                      <button
+                        type="button"
+                        aria-label={`Move point ${point.order + 1} earlier`}
+                        disabled={point.order === 0}
+                        onClick={() => movePoint(point.order, -1)}
+                      >
+                        ↑
+                      </button>
+                      <button
+                        type="button"
+                        aria-label={`Move point ${point.order + 1} later`}
+                        disabled={point.order === formValues.points.length - 1}
+                        onClick={() => movePoint(point.order, 1)}
+                      >
+                        ↓
+                      </button>
+                      <button
+                        type="button"
+                        aria-label={`Remove point ${point.order + 1}`}
+                        onClick={() => removePoint(point.order)}
+                      >
+                        Remove
+                      </button>
+                    </div>
                   </li>
                 ))}
               </ol>

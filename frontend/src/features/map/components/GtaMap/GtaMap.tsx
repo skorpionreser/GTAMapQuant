@@ -5,11 +5,20 @@ import './GtaMap.css'
 import type { GtaMapProps } from '../../types/GtaMapProps'
 import { getMarkerCategoryColor, getMarkerCategoryIcon } from '../../constants/markerCategoryOptions'
 
-export function GtaMap({ markers, areas, onMapClick } : GtaMapProps) {
+export function GtaMap({
+  markers,
+  areas,
+  onMapClick,
+  editablePoints = [],
+  editableMarker,
+  onPointMove,
+  onMarkerMove,
+} : GtaMapProps) {
   const mapElementRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<L.Map | null>(null)
   const markersLayerRef = useRef<L.LayerGroup | null>(null)
   const areasLayerRef = useRef<L.LayerGroup | null>(null)
+  const editorLayerRef = useRef<L.LayerGroup | null>(null)
 
   useEffect(() => {
     if (!mapElementRef.current || mapRef.current) {
@@ -43,6 +52,8 @@ export function GtaMap({ markers, areas, onMapClick } : GtaMapProps) {
 
     markersLayerRef.current = L.layerGroup().addTo(map)
 
+    editorLayerRef.current = L.layerGroup().addTo(map)
+
     map.fitBounds(bounds, { padding: [18, 18] })
     mapRef.current = map
 
@@ -51,6 +62,7 @@ export function GtaMap({ markers, areas, onMapClick } : GtaMapProps) {
       mapRef.current = null
       markersLayerRef.current = null
       areasLayerRef.current = null
+      editorLayerRef.current = null
     }
   }, [])
 
@@ -160,6 +172,66 @@ export function GtaMap({ markers, areas, onMapClick } : GtaMapProps) {
       leafletArea.addTo(areasLayer)
     }
   }, [areas])
+
+  useEffect(() => {
+    const editorLayer = editorLayerRef.current
+
+    if (!editorLayer) {
+      return
+    }
+
+    editorLayer.clearLayers()
+
+    for (const point of editablePoints) {
+      const vertex = L.marker([-point.y, point.x], {
+        draggable: Boolean(onPointMove),
+        icon: L.divIcon({
+          className: 'gta-map__vertex-icon',
+          html: `<span>${point.order + 1}</span>`,
+          iconAnchor: [14, 14],
+          iconSize: [28, 28],
+        }),
+        title: `Point ${point.order + 1}`,
+      })
+
+      if (onPointMove) {
+        vertex.on('dragend', () => {
+          const position = vertex.getLatLng()
+          onPointMove(point.order, {
+            x: position.lng,
+            y: -position.lat,
+          })
+        })
+      }
+
+      vertex.addTo(editorLayer)
+    }
+
+    if (editableMarker) {
+      const marker = L.marker([-editableMarker.y, editableMarker.x], {
+        draggable: Boolean(onMarkerMove),
+        icon: L.divIcon({
+          className: 'gta-map__editor-marker-icon',
+          html: '<span>●</span>',
+          iconAnchor: [14, 14],
+          iconSize: [28, 28],
+        }),
+        title: editableMarker.label,
+      })
+
+      if (onMarkerMove) {
+        marker.on('dragend', () => {
+          const position = marker.getLatLng()
+          onMarkerMove({
+            x: position.lng,
+            y: -position.lat,
+          })
+        })
+      }
+
+      marker.addTo(editorLayer)
+    }
+  }, [editableMarker, editablePoints, onMarkerMove, onPointMove])
 
   return <div ref={mapElementRef} className="gta-map" />
 }

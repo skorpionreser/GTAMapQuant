@@ -29,14 +29,29 @@ vi.mock('./api/updateMapArea', () => ({
 }))
 
 vi.mock('../map/components/GtaMap/GtaMap', () => ({
-  GtaMap: ({ onMapClick }: { onMapClick?: (coordinates: { x: number; y: number }) => void }) => (
-    <button
-      type="button"
-      aria-label="Add map point"
-      onClick={() => onMapClick?.({ x: 100.125, y: 200.875 })}
-    >
-      Map preview
-    </button>
+  GtaMap: ({
+    onMapClick,
+    onPointMove,
+  }: {
+    onMapClick?: (coordinates: { x: number; y: number }) => void
+    onPointMove?: (order: number, coordinates: { x: number; y: number }) => void
+  }) => (
+    <>
+      <button
+        type="button"
+        aria-label="Add map point"
+        onClick={() => onMapClick?.({ x: 100.125, y: 200.875 })}
+      >
+        Map preview
+      </button>
+      <button
+        type="button"
+        aria-label="Drag first point"
+        onClick={() => onPointMove?.(0, { x: 55.555, y: 66.666 })}
+      >
+        Drag first point
+      </button>
+    </>
   ),
 }))
 
@@ -166,6 +181,29 @@ describe('MapAreaAdminPage', () => {
 
     await waitFor(() => expect(apiMocks.deleteMapArea).toHaveBeenCalledWith('area-id', testToken))
     expect(screen.queryByText('Existing zone')).toBeNull()
+  })
+
+  it('updates a dragged point and saves a changed point order', async () => {
+    apiMocks.getMapAreas.mockResolvedValue([existingArea])
+    apiMocks.updateMapArea.mockResolvedValue(existingArea)
+    renderAdminPage()
+
+    await screen.findByText('Existing zone')
+    fireEvent.click(screen.getByRole('button', { name: 'Edit' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Drag first point' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Move point 2 earlier' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Save changes' }))
+
+    await waitFor(() => expect(apiMocks.updateMapArea).toHaveBeenCalledWith('area-id', {
+      name: 'Existing zone',
+      description: 'Existing description.',
+      color: '#2563eb',
+      points: [
+        { x: 20, y: 10, order: 0 },
+        { x: 55.56, y: 66.67, order: 1 },
+        { x: 20, y: 20, order: 2 },
+      ],
+    }, testToken))
   })
 
   it('removes and clears points from the draft', () => {
