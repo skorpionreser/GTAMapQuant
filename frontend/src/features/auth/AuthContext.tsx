@@ -1,9 +1,10 @@
 import { login } from "./api/authApi";
-import { useState} from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import type { LoginRequest } from "./types/LoginRequest";
 import type { LoginResponse } from "./types/LoginResponse";
 import { AuthContext } from './auth-context'
+import { authSessionExpiredEvent } from './sessionEvents'
 
 const authSessionStorageKey = 'gtamapquant-auth-session'
 
@@ -38,10 +39,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setSession(response)
     }
 
-    function signOut(){
+    const signOut = useCallback(() => {
         sessionStorage.removeItem(authSessionStorageKey)
         setSession(null)
-    }
+    }, [])
+
+    useEffect(() => {
+        window.addEventListener(authSessionExpiredEvent, signOut)
+        return () => window.removeEventListener(authSessionExpiredEvent, signOut)
+    }, [signOut])
 
     const isAdmin = session?.role === 'Admin'
 

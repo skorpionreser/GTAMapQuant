@@ -4,6 +4,7 @@ import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/re
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AuthProvider } from './AuthContext'
 import { useAuth } from './useAuth'
+import { authSessionExpiredEvent } from './sessionEvents'
 
 const apiMocks = vi.hoisted(() => ({ login: vi.fn() }))
 
@@ -63,6 +64,17 @@ describe('AuthProvider', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Sign out' }))
 
     expect(screen.getByTestId('login').textContent).toBe('anonymous')
+    expect(sessionStorage.getItem(storageKey)).toBeNull()
+  })
+
+  it('clears the session when an API reports an expired token', async () => {
+    sessionStorage.setItem(storageKey, JSON.stringify(session))
+    render(<AuthProvider><AuthProbe /></AuthProvider>)
+
+    await waitFor(() => {
+      window.dispatchEvent(new Event(authSessionExpiredEvent))
+      expect(screen.getByTestId('login').textContent).toBe('anonymous')
+    })
     expect(sessionStorage.getItem(storageKey)).toBeNull()
   })
 })

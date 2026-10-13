@@ -1,5 +1,6 @@
 import type { CreateMapMarkerRequest } from '../types/CreateMapMarkerRequest'
 import type { MapMarker } from '../../map/types/MapMarker'
+import { notifyAuthSessionExpired } from '../../auth/sessionEvents'
 
 const mapMarkerUrl = 'http://localhost:5114/api/MapMarkers'
 
@@ -17,6 +18,7 @@ export async function createMapMarker(
   })
 
   if (!response.ok) {
+    if (response.status === 401) notifyAuthSessionExpired()
     throw new Error('Failed to create a marker')
   }
 

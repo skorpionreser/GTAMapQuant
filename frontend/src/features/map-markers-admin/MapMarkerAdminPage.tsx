@@ -21,6 +21,7 @@ const initialFormValues: MarkerFormValues = {
   name: '',
   description: '',
   category: MarkerCategory.Other,
+  isStandard: true,
   x: '',
   y: '',
 }
@@ -105,6 +106,7 @@ export function MapMarkerAdminPage() {
       name: marker.name,
       description: marker.description ?? '',
       category: marker.category,
+      isStandard: marker.isStandard,
       x: marker.x.toString(),
       y: marker.y.toString(),
     })
@@ -177,6 +179,7 @@ export function MapMarkerAdminPage() {
       name: formValues.name,
       description: formValues.description.trim() || null,
       category: formValues.category,
+      isStandard: formValues.isStandard,
       x: Number(formValues.x),
       y: Number(formValues.y),
     }
@@ -269,6 +272,18 @@ export function MapMarkerAdminPage() {
                 </option>
               ))}
             </select>
+          </label>
+
+          <label className="mode-checkbox">
+            <input
+              type="checkbox"
+              checked={formValues.isStandard}
+              onChange={(event) => setFormValues((currentValues) => ({
+                ...currentValues,
+                isStandard: event.target.checked,
+              }))}
+            />
+            Show as a standard world-map marker
           </label>
 
           <label className="admin-form__field" htmlFor="marker-x">

@@ -1,5 +1,6 @@
 import type { MapArea } from '../../map/types/MapArea'
 import type { MapAreaRequest } from '../types/MapAreaRequest'
+import { notifyAuthSessionExpired } from '../../auth/sessionEvents'
 
 const mapAreaUrl = 'http://localhost:5114/api/MapAreas'
 
@@ -17,6 +18,7 @@ export async function createMapArea(
   })
 
   if (!response.ok) {
+    if (response.status === 401) notifyAuthSessionExpired()
     throw new Error('Failed to create an area.')
   }
 

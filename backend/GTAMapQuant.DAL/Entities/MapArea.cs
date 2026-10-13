@@ -10,4 +10,5 @@ public class MapArea
     public string? Description { get; set; }
     public string Color { get; set; } = string.Empty;
     public ICollection<MapAreaPoint> Points { get; set; } = new List<MapAreaPoint>();
+    public ICollection<MapModeArea> MapModeAreas { get; set; } = new List<MapModeArea>();
 }

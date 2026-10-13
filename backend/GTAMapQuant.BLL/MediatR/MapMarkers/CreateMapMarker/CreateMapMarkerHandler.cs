@@ -26,6 +26,7 @@ public class CreateMapMarkerHandler
             Name = request.Marker.Name,
             Description = request.Marker.Description,
             Category = request.Marker.Category,
+            IsStandard = request.Marker.IsStandard,
             X = request.Marker.X,
             Y = request.Marker.Y,
         };
@@ -39,6 +40,7 @@ public class CreateMapMarkerHandler
             Name = newMarker.Name,
             Description = newMarker.Description,
             Category = newMarker.Category,
+            IsStandard = newMarker.IsStandard,
             X = newMarker.X,
             Y = newMarker.Y,
         };

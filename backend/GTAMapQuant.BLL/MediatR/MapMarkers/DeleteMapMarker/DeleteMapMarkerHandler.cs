@@ -33,6 +33,7 @@ public class DeleteMapMarkerHandler
             Name = mapMarker.Name,
             Description = mapMarker.Description,
             Category = mapMarker.Category,
+            IsStandard = mapMarker.IsStandard,
             X = mapMarker.X,
             Y = mapMarker.Y,
         };

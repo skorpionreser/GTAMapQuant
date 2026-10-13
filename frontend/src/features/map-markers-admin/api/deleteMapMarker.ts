@@ -1,3 +1,5 @@
+import { notifyAuthSessionExpired } from '../../auth/sessionEvents'
+
 const mapMarkerUrl = 'http://localhost:5114/api/MapMarkers'
 
 export async function deleteMapMarker(id: string, token: string): Promise<void> {
@@ -9,6 +11,7 @@ export async function deleteMapMarker(id: string, token: string): Promise<void> 
   })
 
   if (!response.ok) {
+    if (response.status === 401) notifyAuthSessionExpired()
     throw new Error('Failed to delete a marker')
   }
 }

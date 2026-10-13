@@ -169,6 +169,27 @@
   background: var(--color-panel);
 }
 
+.app-admin-navigation {
+  display: flex;
+  gap: 8px;
+  padding: 12px 40px;
+  border-bottom: 1px solid var(--color-line);
+  background: var(--color-panel);
+}
+
+.app-admin-navigation a {
+  border-radius: 7px;
+  padding: 8px 12px;
+  color: var(--color-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.app-admin-navigation a.active {
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+}
+
 @media (max-width: 850px) {
   .app-sidebar {
     position: static;
@@ -200,6 +221,10 @@
   .app-topbar {
     height: 64px;
     padding: 0 22px;
+  }
+
+  .app-admin-navigation {
+    padding: 10px 22px;
   }
 }
 

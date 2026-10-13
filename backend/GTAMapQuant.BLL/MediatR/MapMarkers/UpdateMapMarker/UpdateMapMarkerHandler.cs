@@ -30,6 +30,7 @@ public class UpdateMapMarkerHandler
         mapMarker.Name = request.Marker.Name;
         mapMarker.Description = request.Marker.Description;
         mapMarker.Category = request.Marker.Category;
+        mapMarker.IsStandard = request.Marker.IsStandard;
         mapMarker.X = request.Marker.X;
         mapMarker.Y = request.Marker.Y;
 
@@ -41,6 +42,7 @@ public class UpdateMapMarkerHandler
             Name = mapMarker.Name,
             Description = mapMarker.Description,
             Category = mapMarker.Category,
+            IsStandard = mapMarker.IsStandard,
             X = mapMarker.X,
             Y = mapMarker.Y,
         };

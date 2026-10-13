@@ -60,6 +60,7 @@ const existingMarker = {
   category: MarkerCategory.Shop,
   description: 'Open all day',
   id: 'marker-id',
+  isStandard: true,
   name: 'Shop',
   x: 10,
   y: 20,
@@ -151,6 +152,7 @@ describe('MapMarkerAdminPage', () => {
       expect(apiMocks.createMapMarker).toHaveBeenCalledWith({
         category: MarkerCategory.Other,
         description: 'Description',
+        isStandard: true,
         name: 'New marker',
         x: 123,
         y: 321,
@@ -184,6 +186,7 @@ describe('MapMarkerAdminPage', () => {
       expect(apiMocks.updateMapMarker).toHaveBeenCalledWith('marker-id', {
         category: MarkerCategory.Shop,
         description: 'Open all day',
+        isStandard: true,
         name: 'Updated shop',
         x: 10,
         y: 20,
