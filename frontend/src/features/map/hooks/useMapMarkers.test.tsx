@@ -21,6 +21,7 @@ describe('useMapMarkers', () => {
     const markers = [
       {
         category: MarkerCategory.Shop,
+        isStandard: true,
         description: null,
         id: 'marker-id',
         name: 'Shop',

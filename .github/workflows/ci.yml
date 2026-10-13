@@ -29,6 +29,11 @@ jobs:
       - name: Build solution
         run: dotnet build GTAMapQuant.slnx --configuration Release --no-restore
 
+      - name: Verify Entity Framework migrations
+        run: |
+          dotnet tool install dotnet-ef --tool-path "$HOME/.dotnet/tools" --version 10.*
+          "$HOME/.dotnet/tools/dotnet-ef" migrations has-pending-model-changes --no-build --project backend/GTAMapQuant.DAL --startup-project backend/GTAMapQuant.Api
+
       - name: Run tests with coverage
         run: >
           dotnet test GTAMapQuant.slnx --configuration Release --no-build

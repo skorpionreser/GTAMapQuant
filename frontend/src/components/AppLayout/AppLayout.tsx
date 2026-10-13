@@ -8,6 +8,14 @@ function getPageTitle(pathname: string): string {
     return 'Marker administration'
   }
 
+  if (pathname === '/admin/map-areas') {
+    return 'Zone administration'
+  }
+
+  if (pathname === '/admin/map-modes') {
+    return 'Map mode administration'
+  }
+
   return pathname === '/map' ? 'World map' : 'Wiki overview'
 }
 
@@ -60,6 +68,13 @@ export function AppLayout() {
             <AccountMenu />
           </div>
         </header>
+        {location.pathname.startsWith('/admin/') && (
+          <nav className="app-admin-navigation" aria-label="Administration navigation">
+            <NavLink to="/admin/map-markers">Markers</NavLink>
+            <NavLink to="/admin/map-areas">Zones</NavLink>
+            <NavLink to="/admin/map-modes">Map modes</NavLink>
+          </nav>
+        )}
         <Outlet />
       </div>
     </div>

@@ -58,6 +58,25 @@ public class MapMarkerHandlersTests
     }
 
     [Fact]
+    public async Task GetById_WhenMarkerExists_ShouldReturnItsStandardFlag()
+    {
+        await using var database = await TestDatabase.CreateAsync();
+        var marker = CreateEntity("Standard marker", MarkerCategory.Shop);
+        marker.IsStandard = true;
+        database.Context.MapMarkers.Add(marker);
+        await database.Context.SaveChangesAsync();
+        var handler = new GetMapMarkerByIdHandler(database.Context);
+
+        var result = await handler.Handle(
+            new GetMapMarkerByIdQuery(marker.Id),
+            CancellationToken.None);
+
+        Assert.True(result.IsSuccess);
+        Assert.NotNull(result.Value);
+        Assert.True(result.Value.IsStandard);
+    }
+
+    [Fact]
     public async Task Update_WhenMarkerExists_ShouldPersistNewValues()
     {
         await using var database = await TestDatabase.CreateAsync();

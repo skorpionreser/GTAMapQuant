@@ -7,6 +7,7 @@ import { MarkerCategory } from '../../map/types/MarkerCategory'
 const request = {
   category: MarkerCategory.Shop,
   description: 'Open all day',
+  isStandard: true,
   name: 'Shop',
   x: 10,
   y: 20,

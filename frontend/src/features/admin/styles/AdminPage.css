@@ -253,6 +253,15 @@
   color: #ff9ca2;
 }
 
+.mode-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--color-text);
+  font-size: 13px;
+  font-weight: 700;
+}
+
 @media (max-width: 850px) {
   .admin-page {
     padding: 28px 22px 34px;

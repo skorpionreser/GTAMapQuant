@@ -40,6 +40,7 @@ describe('MapPage', () => {
       markers: [
         {
           category: MarkerCategory.Shop,
+          isStandard: true,
           description: null,
           id: 'shop-id',
           name: 'Shop',
@@ -48,6 +49,7 @@ describe('MapPage', () => {
         },
         {
           category: MarkerCategory.Quest,
+          isStandard: true,
           description: null,
           id: 'quest-id',
           name: 'Quest',

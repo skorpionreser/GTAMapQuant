@@ -7,6 +7,7 @@ const validFormValues: MarkerFormValues = {
   name: '24/7 Store',
   description: '',
   category: MarkerCategory.Shop,
+  isStandard: true,
   x: '123.5',
   y: '-42',
 }

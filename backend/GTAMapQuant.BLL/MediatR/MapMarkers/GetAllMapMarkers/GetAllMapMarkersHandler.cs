@@ -28,6 +28,7 @@ public class GetAllMapMarkersHandler : IRequestHandler<GetAllMapMarkersQuery, Re
                 Name = marker.Name,
                 Description = marker.Description,
                 Category = marker.Category,
+                IsStandard = marker.IsStandard,
                 X = marker.X,
                 Y = marker.Y,
             })

@@ -16,4 +16,6 @@ public class MapMarker
     public double X { get; set; }
 
     public double Y { get; set; }
+    public bool IsStandard { get; set; }
+    public ICollection<MapModeMarker> MapModeMarkers { get; set; } = new List<MapModeMarker>();
 }

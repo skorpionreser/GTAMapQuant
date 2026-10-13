@@ -103,6 +103,9 @@ namespace GTAMapQuant.DAL.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("IsStandard")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -118,6 +121,66 @@ namespace GTAMapQuant.DAL.Migrations
                     b.ToTable("MapMarkers");
                 });
 
+            modelBuilder.Entity("GTAMapQuant.DAL.Entities.MapMode", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsSystem")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("ShowStandardMarkersByDefault")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("MapModes");
+                });
+
+            modelBuilder.Entity("GTAMapQuant.DAL.Entities.MapModeArea", b =>
+                {
+                    b.Property<Guid>("MapModeId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("MapAreaId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("MapModeId", "MapAreaId");
+
+                    b.HasIndex("MapAreaId");
+
+                    b.ToTable("MapModeAreas");
+                });
+
+            modelBuilder.Entity("GTAMapQuant.DAL.Entities.MapModeMarker", b =>
+                {
+                    b.Property<Guid>("MapModeId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("MapMarkerId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("MapModeId", "MapMarkerId");
+
+                    b.HasIndex("MapMarkerId");
+
+                    b.ToTable("MapModeMarkers");
+                });
+
             modelBuilder.Entity("GTAMapQuant.DAL.Entities.MapAreaPoint", b =>
                 {
                     b.HasOne("GTAMapQuant.DAL.Entities.MapArea", "MapArea")
@@ -129,9 +192,61 @@ namespace GTAMapQuant.DAL.Migrations
                     b.Navigation("MapArea");
                 });
 
+            modelBuilder.Entity("GTAMapQuant.DAL.Entities.MapModeArea", b =>
+                {
+                    b.HasOne("GTAMapQuant.DAL.Entities.MapArea", "MapArea")
+                        .WithMany("MapModeAreas")
+                        .HasForeignKey("MapAreaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GTAMapQuant.DAL.Entities.MapMode", "MapMode")
+                        .WithMany("MapModeAreas")
+                        .HasForeignKey("MapModeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("MapArea");
+
+                    b.Navigation("MapMode");
+                });
+
+            modelBuilder.Entity("GTAMapQuant.DAL.Entities.MapModeMarker", b =>
+                {
+                    b.HasOne("GTAMapQuant.DAL.Entities.MapMarker", "MapMarker")
+                        .WithMany("MapModeMarkers")
+                        .HasForeignKey("MapMarkerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GTAMapQuant.DAL.Entities.MapMode", "MapMode")
+                        .WithMany("MapModeMarkers")
+                        .HasForeignKey("MapModeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("MapMarker");
+
+                    b.Navigation("MapMode");
+                });
+
             modelBuilder.Entity("GTAMapQuant.DAL.Entities.MapArea", b =>
                 {
+                    b.Navigation("MapModeAreas");
+
                     b.Navigation("Points");
+                });
+
+            modelBuilder.Entity("GTAMapQuant.DAL.Entities.MapMarker", b =>
+                {
+                    b.Navigation("MapModeMarkers");
+                });
+
+            modelBuilder.Entity("GTAMapQuant.DAL.Entities.MapMode", b =>
+                {
+                    b.Navigation("MapModeAreas");
+
+                    b.Navigation("MapModeMarkers");
                 });
 #pragma warning restore 612, 618
         }
