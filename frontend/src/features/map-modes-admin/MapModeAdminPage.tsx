@@ -161,11 +161,23 @@ export function MapModeAdminPage() {
         <form className="admin-form" onSubmit={handleSubmit}>
           <label className="admin-form__field"><span>Name</span><input value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} /></label>
           <label className="admin-form__field admin-form__field--wide"><span>Description</span><textarea value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} /></label>
-          <label className="admin-form__field"><span>Display order</span><input type="number" value={form.sortOrder} onChange={(event) => setForm({ ...form, sortOrder: event.target.value })} /></label>
-          <label className="mode-checkbox"><input type="checkbox" checked={form.isDefault} onChange={(event) => setForm({ ...form, isDefault: event.target.checked })} />Default map mode</label>
-          <label className="mode-checkbox"><input type="checkbox" checked={form.showStandardMarkersByDefault} onChange={(event) => setForm({ ...form, showStandardMarkersByDefault: event.target.checked })} />Show standard markers by default</label>
-          <fieldset className="mode-selector"><legend>Zones</legend>{areas.map((area) => <label key={area.id}><input type="checkbox" checked={form.mapAreaIds.includes(area.id)} onChange={() => toggleId('mapAreaIds', area.id)} />{area.name}</label>)}</fieldset>
-          <fieldset className="mode-selector"><legend>Markers</legend>{markers.map((marker) => <label key={marker.id}><input type="checkbox" checked={form.mapMarkerIds.includes(marker.id)} onChange={() => toggleId('mapMarkerIds', marker.id)} />{marker.name}</label>)}</fieldset>
+          <div className="mode-form__settings">
+            <label className="admin-form__field"><span>Display order</span><input type="number" value={form.sortOrder} onChange={(event) => setForm({ ...form, sortOrder: event.target.value })} /></label>
+            <label className="admin-toggle">
+              <input type="checkbox" aria-label="Default map mode" checked={form.isDefault} onChange={(event) => setForm({ ...form, isDefault: event.target.checked })} />
+              <span className="admin-toggle__control" aria-hidden="true" />
+              <span className="admin-toggle__copy"><b>Default map mode</b><small>Open this mode first for visitors.</small></span>
+            </label>
+            <label className="admin-toggle">
+              <input type="checkbox" aria-label="Standard markers by default" checked={form.showStandardMarkersByDefault} onChange={(event) => setForm({ ...form, showStandardMarkersByDefault: event.target.checked })} />
+              <span className="admin-toggle__control" aria-hidden="true" />
+              <span className="admin-toggle__copy"><b>Standard markers by default</b><small>Visitors can still change this on the map.</small></span>
+            </label>
+          </div>
+          <div className="mode-form__assignments">
+            <fieldset className="mode-selector"><legend>Zones</legend>{areas.map((area) => <label key={area.id}><input type="checkbox" checked={form.mapAreaIds.includes(area.id)} onChange={() => toggleId('mapAreaIds', area.id)} />{area.name}</label>)}</fieldset>
+            <fieldset className="mode-selector"><legend>Markers</legend>{markers.map((marker) => <label key={marker.id}><input type="checkbox" checked={form.mapMarkerIds.includes(marker.id)} onChange={() => toggleId('mapMarkerIds', marker.id)} />{marker.name}</label>)}</fieldset>
+          </div>
           <div className="admin-form__actions"><button className="button button--primary" type="submit">{editingMode ? 'Save changes' : 'Create mode'}</button>{editingMode && <button className="button button--secondary" type="button" onClick={resetForm}>Cancel edit</button>}</div>
         </form>
       </section>

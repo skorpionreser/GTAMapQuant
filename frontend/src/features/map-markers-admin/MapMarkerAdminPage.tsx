@@ -257,61 +257,68 @@ export function MapMarkerAdminPage() {
             />
           </label>
 
-          <label className="admin-form__field" htmlFor="marker-category">
-            <span>Category</span>
-            <select
-              id="marker-category"
-              value={formValues.category}
-              onChange={(event) =>
-                handleCategoryChange(Number(event.target.value) as MarkerCategory)
-              }
-            >
-              {categoryOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
+          <div className="marker-form__details">
+            <label className="admin-form__field" htmlFor="marker-category">
+              <span>Category</span>
+              <select
+                id="marker-category"
+                value={formValues.category}
+                onChange={(event) =>
+                  handleCategoryChange(Number(event.target.value) as MarkerCategory)
+                }
+              >
+                {categoryOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </label>
 
-          <label className="mode-checkbox">
+            <label className="admin-form__field" htmlFor="marker-x">
+              <span>X coordinate</span>
+              <input
+                id="marker-x"
+                type="number"
+                value={formValues.x}
+                onChange={(event) =>
+                  handleTextFieldChange('x', event.target.value)
+                }
+                aria-invalid={Boolean(validationErrors.x)}
+              />
+              {validationErrors.x && (<span className='admin-form__error'>{validationErrors.x}</span>)}
+            </label>
+
+            <label className="admin-form__field" htmlFor="marker-y">
+              <span>Y coordinate</span>
+              <input
+                id="marker-y"
+                type="number"
+                value={formValues.y}
+                onChange={(event) =>
+                  handleTextFieldChange('y', event.target.value)
+                }
+                aria-invalid={Boolean(validationErrors.y)}
+              />
+              {validationErrors.y && (<span className='admin-form__error'>{validationErrors.y}</span>)}
+            </label>
+          </div>
+
+          <label className="admin-toggle marker-form__standard-toggle">
             <input
               type="checkbox"
+              aria-label="Standard world-map marker"
               checked={formValues.isStandard}
               onChange={(event) => setFormValues((currentValues) => ({
                 ...currentValues,
                 isStandard: event.target.checked,
               }))}
             />
-            Show as a standard world-map marker
-          </label>
-
-          <label className="admin-form__field" htmlFor="marker-x">
-            <span>X coordinate</span>
-            <input
-              id="marker-x"
-              type="number"
-              value={formValues.x}
-              onChange={(event) =>
-                handleTextFieldChange('x', event.target.value)
-              }
-              aria-invalid={Boolean(validationErrors.x)}
-            />
-            {validationErrors.x && (<span className='admin-form__error'>{validationErrors.x}</span>)}
-          </label>
-
-          <label className="admin-form__field" htmlFor="marker-y">
-            <span>Y coordinate</span>
-            <input
-              id="marker-y"
-              type="number"
-              value={formValues.y}
-              onChange={(event) =>
-                handleTextFieldChange('y', event.target.value)
-              }
-              aria-invalid={Boolean(validationErrors.y)}
-            />
-            {validationErrors.y && (<span className='admin-form__error'>{validationErrors.y}</span>)}
+            <span className="admin-toggle__control" aria-hidden="true" />
+            <span className="admin-toggle__copy">
+              <b>Standard world-map marker</b>
+              <small>Show it whenever visitors enable standard markers.</small>
+            </span>
           </label>
 
           <div className="marker-editor">

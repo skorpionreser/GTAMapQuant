@@ -114,13 +114,6 @@ export function AccountMenu() {
               <span aria-hidden="true">⚙</span>
               Administration
             </Link>
-            <Link
-              className="account-menu__link"
-              to="/admin/map-areas"
-              onClick={() => setIsOpen(false)}
-            >
-              Area administration
-            </Link>
             </>
           )}
 
