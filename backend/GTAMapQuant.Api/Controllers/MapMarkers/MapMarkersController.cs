@@ -1,3 +1,4 @@
+using GTAMapQuant.Api.Audit;
 using GTAMapQuant.BLL.DTO.MapMarkers;
 using GTAMapQuant.BLL.MediatR.MapMarkers.CreateMapMarker;
 using GTAMapQuant.BLL.MediatR.MapMarkers.DeleteMapMarker;
@@ -11,6 +12,13 @@ namespace GTAMapQuant.Api.Controllers.MapMarkers;
 
 public class MapMarkersController : BaseApiController
 {
+    private readonly IAuditLogger _auditLogger;
+
+    public MapMarkersController(IAuditLogger auditLogger)
+    {
+        _auditLogger = auditLogger;
+    }
+
     [HttpGet]
     public async Task<IActionResult> GetAll(
         CancellationToken cancellationToken)
@@ -32,7 +40,9 @@ public class MapMarkersController : BaseApiController
         CreateMapMarkerDto marker,
         CancellationToken cancellationToken)
     {
-        return HandleResult(await Mediator.Send(new CreateMapMarkerCommand(marker), cancellationToken));
+        var result = await Mediator.Send(new CreateMapMarkerCommand(marker), cancellationToken);
+        await LogSuccessfulChange(result.Value, result.IsSuccess, "Created", cancellationToken);
+        return HandleResult(result);
     }
 
     [Authorize(Roles = "Admin")]
@@ -42,7 +52,9 @@ public class MapMarkersController : BaseApiController
         UpdateMapMarkerDto marker,
         CancellationToken cancellationToken)
     {
-        return HandleResult(await Mediator.Send(new UpdateMapMarkerCommand(id, marker), cancellationToken));
+        var result = await Mediator.Send(new UpdateMapMarkerCommand(id, marker), cancellationToken);
+        await LogSuccessfulChange(result.Value, result.IsSuccess, "Updated", cancellationToken);
+        return HandleResult(result);
     }
 
     [Authorize(Roles = "Admin")]
@@ -51,7 +63,19 @@ public class MapMarkersController : BaseApiController
         Guid id,
         CancellationToken cancellationToken)
     {
-        return HandleResult(
-            await Mediator.Send(new DeleteMapMarkerCommand(id), cancellationToken));
+        var result = await Mediator.Send(new DeleteMapMarkerCommand(id), cancellationToken);
+        await LogSuccessfulChange(result.Value, result.IsSuccess, "Deleted", cancellationToken);
+        return HandleResult(result);
+    }
+
+    private Task LogSuccessfulChange(
+        MapMarkerDto? marker,
+        bool isSuccess,
+        string action,
+        CancellationToken cancellationToken)
+    {
+        return isSuccess && marker is not null
+            ? _auditLogger.LogAsync(User, action, "MapMarker", marker.Id, marker.Name, marker, cancellationToken)
+            : Task.CompletedTask;
     }
 }

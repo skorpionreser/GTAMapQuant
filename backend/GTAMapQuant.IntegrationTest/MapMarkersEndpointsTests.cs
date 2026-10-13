@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using GTAMapQuant.BLL.DTO.AuditLogs;
 using GTAMapQuant.BLL.DTO.MapMarkers;
 using GTAMapQuant.DAL.Entities;
 using Xunit;
@@ -152,5 +153,32 @@ public class MapMarkersEndpointsTests
         var response = await client.PostAsJsonAsync("/api/MapMarkers", request);
 
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Create_WhenMarkerIsSaved_ShouldWriteAnAuditLog()
+    {
+        await _factory.ResetDatabaseAsync();
+        var client = await _factory.CreateAdminClientAsync();
+
+        var createResponse = await client.PostAsJsonAsync("/api/MapMarkers", new CreateMapMarkerDto
+        {
+            Name = "Audited marker",
+            Category = MarkerCategory.Shop,
+            X = 10,
+            Y = 20,
+        });
+
+        var logsResponse = await client.GetAsync("/api/AuditLogs");
+        var logs = await logsResponse.Content.ReadFromJsonAsync<List<AuditLogDto>>();
+
+        Assert.Equal(HttpStatusCode.OK, createResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, logsResponse.StatusCode);
+        var log = Assert.Single(logs!);
+        Assert.Equal("test-admin", log.AdminLogin);
+        Assert.Equal("Created", log.Action);
+        Assert.Equal("MapMarker", log.EntityType);
+        Assert.Equal("Audited marker", log.EntityName);
+        Assert.Contains("Audited marker", log.Data);
     }
 }

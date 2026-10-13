@@ -17,6 +17,7 @@ public class GtaMapDbContext : DbContext
     public DbSet<MapMode> MapModes => Set<MapMode>();
     public DbSet<MapModeArea> MapModeAreas => Set<MapModeArea>();
     public DbSet<MapModeMarker> MapModeMarkers => Set<MapModeMarker>();
+    public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -25,6 +26,9 @@ public class GtaMapDbContext : DbContext
         modelBuilder.Entity<AdminUser>()
             .HasIndex(user => user.Login)
             .IsUnique();
+
+        modelBuilder.Entity<AuditLog>()
+            .HasIndex(log => log.CreatedAtUtc);
 
         modelBuilder.Entity<MapModeArea>()
             .HasKey(link => new { link.MapModeId, link.MapAreaId });

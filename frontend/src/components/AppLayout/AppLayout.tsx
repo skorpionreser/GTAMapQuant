@@ -16,6 +16,10 @@ function getPageTitle(pathname: string): string {
     return 'Map mode administration'
   }
 
+  if (pathname === '/admin/audit-logs') {
+    return 'Audit log'
+  }
+
   return pathname === '/map' ? 'World map' : 'Wiki overview'
 }
 
@@ -73,6 +77,7 @@ export function AppLayout() {
             <NavLink to="/admin/map-markers">Markers</NavLink>
             <NavLink to="/admin/map-areas">Zones</NavLink>
             <NavLink to="/admin/map-modes">Map modes</NavLink>
+            <NavLink to="/admin/audit-logs">Audit log</NavLink>
           </nav>
         )}
         <Outlet />

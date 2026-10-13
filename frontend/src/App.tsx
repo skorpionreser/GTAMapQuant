@@ -6,6 +6,7 @@ import { AppLayout } from './components/AppLayout/AppLayout'
 import { HomePage } from './features/home/HomePage'
 import { RequireAdmin } from './features/auth/RequireAdmin'
 import { MapModeAdminPage } from './features/map-modes-admin/MapModeAdminPage'
+import { AuditLogsPage } from './features/audit-logs/AuditLogsPage'
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/admin/map-markers" element={<RequireAdmin><MapMarkerAdminPage /></RequireAdmin>} />
         <Route path="/admin/map-areas" element={<RequireAdmin><MapAreaAdminPage /></RequireAdmin>} />
         <Route path="/admin/map-modes" element={<RequireAdmin><MapModeAdminPage /></RequireAdmin>} />
+        <Route path="/admin/audit-logs" element={<RequireAdmin><AuditLogsPage /></RequireAdmin>} />
       </Route>
     </Routes>
   )
