@@ -1,3 +1,4 @@
+using GTAMapQuant.Api.Audit;
 using GTAMapQuant.BLL.DTO.MapModes;
 using GTAMapQuant.BLL.MediatR.MapModes.CreateMapMode;
 using GTAMapQuant.BLL.MediatR.MapModes.DeleteMapMode;
@@ -11,6 +12,13 @@ namespace GTAMapQuant.Api.Controllers.MapModes;
 
 public class MapModesController : BaseApiController
 {
+    private readonly IAuditLogger _auditLogger;
+
+    public MapModesController(IAuditLogger auditLogger)
+    {
+        _auditLogger = auditLogger;
+    }
+
     [HttpGet]
     public async Task<IActionResult> GetAll(
         CancellationToken cancellationToken)
@@ -33,7 +41,9 @@ public class MapModesController : BaseApiController
         CreateMapModeDto mode,
         CancellationToken cancellationToken)
     {
-        return HandleResult(await Mediator.Send(new CreateMapModeCommand(mode), cancellationToken));
+        var result = await Mediator.Send(new CreateMapModeCommand(mode), cancellationToken);
+        await LogSuccessfulChange(result.Value, result.IsSuccess, "Created", cancellationToken);
+        return HandleResult(result);
     }
 
     [Authorize(Roles = "Admin")]
@@ -43,7 +53,9 @@ public class MapModesController : BaseApiController
         UpdateMapModeDto mode,
         CancellationToken cancellationToken)
     {
-        return HandleResult(await Mediator.Send(new UpdateMapModeCommand(id, mode), cancellationToken));
+        var result = await Mediator.Send(new UpdateMapModeCommand(id, mode), cancellationToken);
+        await LogSuccessfulChange(result.Value, result.IsSuccess, "Updated", cancellationToken);
+        return HandleResult(result);
     }
 
     [Authorize(Roles = "Admin")]
@@ -52,6 +64,19 @@ public class MapModesController : BaseApiController
         Guid id,
         CancellationToken cancellationToken)
     {
-        return HandleResult(await Mediator.Send(new DeleteMapModeCommand(id), cancellationToken));
+        var result = await Mediator.Send(new DeleteMapModeCommand(id), cancellationToken);
+        await LogSuccessfulChange(result.Value, result.IsSuccess, "Deleted", cancellationToken);
+        return HandleResult(result);
+    }
+
+    private Task LogSuccessfulChange(
+        MapModeDto? mode,
+        bool isSuccess,
+        string action,
+        CancellationToken cancellationToken)
+    {
+        return isSuccess && mode is not null
+            ? _auditLogger.LogAsync(User, action, "MapMode", mode.Id, mode.Name, mode, cancellationToken)
+            : Task.CompletedTask;
     }
 }

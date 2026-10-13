@@ -1,4 +1,5 @@
 using FluentValidation;
+using GTAMapQuant.Api.Audit;
 using GTAMapQuant.Api.Auth;
 using GTAMapQuant.Api.ExceptionHandlers;
 using GTAMapQuant.BLL.MediatR.Behaviors;
@@ -78,6 +79,7 @@ public class Program
         builder.Services.AddScoped<IPasswordService, PasswordService>();
         builder.Services.AddScoped<ITokenService, TokenService>();
         builder.Services.AddScoped<AdminBootstrapper>();
+        builder.Services.AddScoped<IAuditLogger, AuditLogger>();
         builder.Services.AddProblemDetails();
         builder.Services.AddExceptionHandler<ValidationExceptionHandler>();
         builder.Services.AddControllers();
