@@ -111,10 +111,15 @@ export function DynamicMapPage() {
               <label className="map-standard-toggle">
                 <input
                   type="checkbox"
+                  aria-label="Standard markers"
                   checked={content.showStandardMarkers}
                   onChange={(event) => setShowStandardMarkers(event.target.checked)}
                 />
-                <span>Standard markers</span>
+                <span className="map-standard-toggle__control" aria-hidden="true" />
+                <span className="map-standard-toggle__copy">
+                  <b>Standard markers</b>
+                  <small>Show shared world-map locations</small>
+                </span>
               </label>
             </>
           )}

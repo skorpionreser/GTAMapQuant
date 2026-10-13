@@ -4,6 +4,17 @@
   gap: 16px;
 }
 
+.marker-form__details {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.marker-form__standard-toggle {
+  grid-column: 1 / -1;
+}
+
 .marker-editor__heading {
   display: flex;
   align-items: end;
@@ -32,6 +43,10 @@
 }
 
 @media (max-width: 560px) {
+  .marker-form__details {
+    grid-template-columns: 1fr;
+  }
+
   .marker-editor__heading {
     align-items: flex-start;
     flex-direction: column;
